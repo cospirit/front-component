@@ -12,7 +12,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
-import { Route, Dictionary } from "../../Route";
+import { Route, Dictionary } from "../Route";
 
 @Component({})
 export default class IconLink extends Vue {

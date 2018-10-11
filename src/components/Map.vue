@@ -13,9 +13,9 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
-import { Pin } from "./MapInterfaces";
-import L from "leaflet";
-import { Icon, Marker, Map as LeafleatMap, LatLngBoundsExpression, Layer, LatLng } from "leaflet";
+import { Pin } from "./MapInterfaces.vue";
+import L, { Icon, Marker, Map as LeafleatMap, LatLngBoundsExpression, Layer, LatLng }  from "leaflet";
+import _ from "lodash";
 
 interface LayerControl {
     addOverlay(layer: object, name: string): void;

@@ -17,9 +17,9 @@ import M from "materialize-css";
 
 @Component({ components: { Preloader } })
 export default class List extends Vue {
-    private page: number = 1;
-    private loading: boolean = false;
-    private hasNextPage: boolean = true;
+    protected page: number = 1;
+    protected loading: boolean = false;
+    protected hasNextPage: boolean = true;
     private list: string[] = [];
     protected route: string = "";
     protected elements: object[] = [];
@@ -67,6 +67,13 @@ export default class List extends Vue {
         }
     }
 
+    protected refreshList(): void {
+        this.hasNextPage = true;
+        this.page = 1;
+        this.elements = [];
+        this.loadUsingApi();
+    }
+
     private loadUsingApi(): void {
         const params = {
             filters: this.filters,
@@ -88,7 +95,7 @@ export default class List extends Vue {
                         this.hasNextPage = data.data.length > 0;
                         this.loading = false;
                     },
-                    (erro: any) => {
+                    (error: any) => {
                         if (this.$options.filters) {
                             M.toast({
                                 html: this.$options.filters.trans("An error occurred while loading the list."),

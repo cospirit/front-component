@@ -75,7 +75,7 @@ export default class List extends Vue {
     }
 
     private loadUsingApi(): void {
-        const params = {
+        const params: object = {
             filters: this.filters,
             fields: this.fields,
             pagination: {
@@ -88,7 +88,7 @@ export default class List extends Vue {
             this.loading = true;
 
             Http
-                .search(this.link(), [ params ],
+                .search(this.link(), params,
                     (data: Data) => {
                         this.$emit("update", data.data);
                         data.data.forEach((entity: any) => this.elements.push(entity));

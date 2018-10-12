@@ -5,7 +5,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "lodash": "^4.17.10",
-    "materialize-css": "^0.100.2",
+    "materialize-css": "^1.0.0",
     "moment": "^2.22.2",
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
@@ -24,7 +24,7 @@
     "eslint-plugin-vue": "^5.0.0-beta.3"
   },
   "files": [
-    "src/components/*.vue",
-    "src/*.ts"
+    "components/*.vue",
+    "*.ts"
   ]
 }

@@ -13,7 +13,7 @@
     import Vue from "vue";
     import Component from "vue-class-component";
     import { Prop, Watch } from "vue-property-decorator";
-    import L, { Marker, Map as LeafleatMap, LatLngBoundsExpression }  from "leaflet";
+    import L, { Marker, Map as LeafleatMap, LatLngBoundsExpression, Layer }  from "leaflet";
 
     interface LayerControl {
         addOverlay(layer: object, name: string): void;
@@ -30,7 +30,7 @@
         private layerControl: LayerControl;
         private map: LeafleatMap;
 
-        @Prop({ default: null }) public bounds!: LatLngBoundsExpression;
+        @Prop({ default: null }) public bounds!: LatLngBoundsExpression[];
         @Prop({ default: [] }) public markers!: MarkerList[];
         @Prop({ default: "500px" }) public width!: string;
         @Prop({ default: "500px" }) public height!: string;
@@ -41,14 +41,19 @@
                 [ 45.749095 , 4.82665 ],
                 this.zoom,
             );
-            L.tileLayer("http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+            let satellite = L.tileLayer("http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
                 {
                     maxZoom: 20,
                     subdomains: [ "mt0" ],
                 },
             ).addTo(this.map);
-            this.layerControl = L.control.layers().addTo(this.map);
-            this.updateMarker();
+            let plan = L.tileLayer("http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+                {
+                    maxZoom: 20,
+                    subdomains: [ "mt0" ],
+                },
+            ).addTo(this.map);
+            this.layerControl = L.control.layers({satellite, plan}).addTo(this.map);
         }
 
         @Watch("markers") public onMarkersChange() {
@@ -57,20 +62,23 @@
 
         private updateMarker(): void {
             // Remove all layers except main layers (e.g: google map)
-            this.map.eachLayer((layer: any) => {
-                if (layer.id) {
-                    this.map.removeLayer(layer);
+            this.map.eachLayer((layer: Layer) => {
+                if (!layer._url) {
+                    layer.removeFrom(this.map);
+                    this.layerControl.removeLayer(layer);
                 }
             });
 
-            // Add all layer on map
-            this.markers.forEach((markerList: MarkerList) => {
-                this.addMarkerToLayer(markerList);
-            });
+            if (this.markers.length > 0) {
+                // Add all layer on map
+                this.markers.forEach((markerList: MarkerList) => {
+                    this.addMarkerToLayer(markerList);
+                });
+            }
 
             // Focus map on bounds (coordinates list)
-            if (this.bounds) {
-                this.map.fitBounds(this.bounds, { maxZoom: 14 });
+            if (this.bounds.length > 0) {
+                this.map.flyToBounds(this.bounds, { maxZoom: 14 });
             }
         }
 

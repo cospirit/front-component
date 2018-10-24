@@ -12,7 +12,7 @@ export interface ExtendedMarker extends Marker {
 }
 
 export default class Pin {
-    
+
     public static createEntityMarkerList(entityList: any[], clickable: any, draggable: any): Marker[] {
         const list: any[] = [];
         entityList.forEach((entity) => {

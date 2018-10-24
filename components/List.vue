@@ -11,8 +11,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
 import Preloader from "./Preloader.vue";
-import Data from "./HttpInterface.vue";
-import Http from "../Http";
+import Http, { Data } from "../Http";
 import M from "materialize-css";
 
 @Component({ components: { Preloader } })

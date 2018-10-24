@@ -2,6 +2,11 @@ import $http from "axios";
 import _ from "lodash";
 import M from "materialize-css";
 
+export interface Data {
+    message: string;
+    data: any;
+}
+
 export default class Http {
     public static search(link: string, params: object, successFunction: any, errorFunction: any): void {
         Http.call($http.post(link, params), successFunction, errorFunction);

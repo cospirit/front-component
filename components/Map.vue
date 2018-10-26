@@ -30,11 +30,11 @@
         private layerControl: LayerControl;
         private map: LeafleatMap;
 
-        @Prop({ default: null }) public bounds!: LatLngBoundsExpression[];
+        @Prop({ default: null }) public bounds!: LatLngBoundsExpression & string[];
         @Prop({ default: [] }) public markers!: MarkerList[];
         @Prop({ default: "500px" }) public width!: string;
         @Prop({ default: "500px" }) public height!: string;
-        @Prop({ default: 13 }) public zoom!: number;
+        @Prop({ default: 10 }) public zoom!: number;
 
         public mounted(): void {
             this.map = L.map("map").setView(

@@ -1,10 +1,10 @@
 <template>
     <div>
         <link
-                rel="stylesheet"
-                href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
-                integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-                crossorigin="">
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+            integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+            crossorigin="">
         <div id="map" :style="{ width: width, height: height }" />
     </div>
 </template>
@@ -17,12 +17,27 @@
 
     interface LayerControl {
         addOverlay(layer: object, name: string): void;
+        removeLayer(layer: object): void;
     }
 
     interface MarkerList {
         name: string;
-        markers: Marker[];
+        markers: ExtendedMarker & Marker[];
         layerId: string;
+        type: string;
+    }
+
+    interface ExtendedLayer {
+        _url: string;
+    }
+
+    interface Event {
+        eventType: string;
+        eventAction: any;
+    }
+
+    interface ExtendedMarker {
+        addTo(Map): void
     }
 
     @Component({ })
@@ -35,6 +50,7 @@
         @Prop({ default: "500px" }) public width!: string;
         @Prop({ default: "500px" }) public height!: string;
         @Prop({ default: 10 }) public zoom!: number;
+        @Prop({ default: [] }) public mapEvents!: Event[];
 
         public mounted(): void {
             this.map = L.map("map").setView(
@@ -60,9 +76,15 @@
             this.updateMarker();
         }
 
+        @Watch("mapEvents") public onEventsChange() {
+            this.mapEvents.forEach((event: Event) => {
+                this.map.on(event.eventType, event.eventAction);
+            });
+        }
+
         private updateMarker(): void {
             // Remove all layers except main layers (e.g: google map)
-            this.map.eachLayer((layer: Layer) => {
+            this.map.eachLayer((layer: Layer & ExtendedLayer) => {
                 if (!layer._url) {
                     layer.removeFrom(this.map);
                     this.layerControl.removeLayer(layer);
@@ -82,12 +104,15 @@
             }
         }
 
-        private addMarkerToLayer(markerList: MarkerList): object {
-            const layer = L.layerGroup(markerList.markers);
-            layer.addTo(this.map);
-            this.layerControl.addOverlay(layer, markerList.name);
-
-            return layer;
+        private addMarkerToLayer(markerList: MarkerList): void {
+            if (markerList.type === "geoJson") {
+                markerList.markers.addTo(this.map);
+                this.layerControl.addOverlay(markerList.markers, markerList.name);
+            } else {
+                const layer = L.layerGroup(markerList.markers);
+                layer.addTo(this.map);
+                this.layerControl.addOverlay(layer, markerList.name);
+            }
         }
     }
 </script>

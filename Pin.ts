@@ -75,6 +75,7 @@ export default class Pin {
 
         return L.icon({
             iconUrl: url,
+            iconAnchor: [18, 30],
         });
     }
 }

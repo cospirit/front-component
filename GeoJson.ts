@@ -2,11 +2,15 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import L, { GeoJSON,GeoJSONOptions } from "leaflet";
 
+interface Properties {
+    popupContent: string;
+}
+
 @Component({})
 export default class GeoJson extends Vue {
     public static addPolygon(
         zone: number[][],
-        properties: object,
+        properties: Properties,
         color: string,
         opacity: number = 1,
         type: string = "Polygon"
@@ -25,7 +29,12 @@ export default class GeoJson extends Vue {
             style: this.style(color, opacity),
         };
 
-        return L.geoJSON(geojsonFeature, options);
+        const geoJson = L.geoJSON(geojsonFeature, options);
+        if (properties && properties.popupContent) {
+            geoJson.bindPopup(properties.popupContent);
+        }
+
+        return geoJson;
     }
 
     public static style(color: string, opacity: number): any {

@@ -13,7 +13,7 @@
     import Vue from "vue";
     import Component from "vue-class-component";
     import { Prop, Watch } from "vue-property-decorator";
-    import L, { Marker, Map as LeafleatMap, LatLngBoundsExpression, Layer }  from "leaflet";
+    import L, { Marker, Map as LeafleatMap, LatLngBoundsExpression, Layer, Control }  from "leaflet";
 
     interface LayerControl {
         addOverlay(layer: object, name: string): void;
@@ -45,12 +45,13 @@
         private layerControl: LayerControl;
         private map: LeafleatMap;
 
-        @Prop({ default: null }) public bounds!: LatLngBoundsExpression & string[];
-        @Prop({ default: [] }) public markers!: MarkerList[];
         @Prop({ default: "500px" }) public width!: string;
         @Prop({ default: "500px" }) public height!: string;
         @Prop({ default: 10 }) public zoom!: number;
+        @Prop({ default: null }) public bounds!: LatLngBoundsExpression & string[];
+        @Prop({ default: [] }) public markers!: MarkerList[];
         @Prop({ default: [] }) public mapEvents!: Event[];
+        @Prop({ default: [] }) public controls: Control[];
 
         public mounted(): void {
             this.map = L.map("map").setView(
@@ -69,7 +70,11 @@
                     subdomains: [ "mt0" ],
                 },
             ).addTo(this.map);
-            this.layerControl = L.control.layers({satellite, plan}).addTo(this.map);
+            this.layerControl = L.control.layers({ satellite, plan }).addTo(this.map);
+            
+            this.controls.forEach((control: Control) => {
+                this.map.addControl(control);
+            });
         }
 
         @Watch("markers") public onMarkersChange() {

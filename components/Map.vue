@@ -15,28 +15,28 @@
     import { Prop, Watch } from "vue-property-decorator";
     import L, { Marker, Map as LeafleatMap, LatLngBoundsExpression, Layer, Control }  from "leaflet";
 
-    interface LayerControl {
+    export interface LayerControl {
         addOverlay(layer: object, name: string): void;
         removeLayer(layer: object): void;
     }
 
-    interface MarkerList {
+    export interface MarkerList {
         name: string;
         markers: ExtendedMarker & Marker[];
         layerId: string;
         type: string;
     }
 
-    interface ExtendedLayer {
+    export interface ExtendedLayer {
         _url: string;
     }
 
-    interface Event {
+    export interface Event {
         eventType: string;
         eventAction: any;
     }
 
-    interface ExtendedMarker {
+    export interface ExtendedMarker {
         addTo(Map): void
     }
 
@@ -52,6 +52,7 @@
         @Prop({ default: [] }) public markers!: MarkerList[];
         @Prop({ default: [] }) public mapEvents!: Event[];
         @Prop({ default: [] }) public controls: Control[];
+        @Prop({ default: () => { return [] } }) public mapControls: any[];
 
         public mounted(): void {
             this.map = L.map("map").setView(
@@ -71,9 +72,9 @@
                 },
             ).addTo(this.map);
             this.layerControl = L.control.layers({ satellite, plan }).addTo(this.map);
-            
-            this.controls.forEach((control: Control) => {
-                this.map.addControl(control);
+            this.map.addControl(new L.control.fullscreen());
+            this.mapControls.forEach((control: Control) => {
+                control.addTo(this.map);
             });
         }
 
@@ -84,6 +85,12 @@
         @Watch("mapEvents") public onEventsChange() {
             this.mapEvents.forEach((event: Event) => {
                 this.map.on(event.eventType, event.eventAction);
+            });
+        }
+
+        @Watch("mapControls") public onControlsChange() {
+            this.mapControls.forEach((control: Control) => {
+                control.addTo(this.map);
             });
         }
 
@@ -110,14 +117,9 @@
         }
 
         private addMarkerToLayer(markerList: MarkerList): void {
-            if (markerList.type === "geoJson") {
-                markerList.markers.addTo(this.map);
-                this.layerControl.addOverlay(markerList.markers, markerList.name);
-            } else {
-                const layer = L.layerGroup(markerList.markers);
-                layer.addTo(this.map);
-                this.layerControl.addOverlay(layer, markerList.name);
-            }
+            const layer = L.layerGroup(markerList.markers);
+            layer.addTo(this.map);
+            this.layerControl.addOverlay(layer, markerList.name);
         }
     }
 </script>

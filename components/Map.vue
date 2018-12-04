@@ -14,6 +14,8 @@
     import Component from "vue-class-component";
     import { Prop, Watch } from "vue-property-decorator";
     import L, { Marker, Map as LeafleatMap, LatLngBoundsExpression, Layer, Control }  from "leaflet";
+    import "leaflet-fullscreen";
+    import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
 
     interface LayerControl {
         addOverlay(layer: object, name: string): void;

@@ -15,29 +15,30 @@
     import { Prop, Watch } from "vue-property-decorator";
     import L, { Marker, Map as LeafleatMap, LatLngBoundsExpression, Layer, Control }  from "leaflet";
 
-    export interface LayerControl {
+    interface LayerControl {
         addOverlay(layer: object, name: string): void;
         removeLayer(layer: object): void;
     }
 
-    export interface MarkerList {
+    interface MarkerList {
         name: string;
-        markers: ExtendedMarker & Marker[];
+        markers: ExtendedMarker[];
         layerId: string;
         type: string;
     }
 
-    export interface ExtendedLayer {
+    export interface ExtendedLayer extends Layer {
         _url: string;
     }
 
-    export interface Event {
+    interface Event {
         eventType: string;
         eventAction: any;
     }
 
-    export interface ExtendedMarker {
+    export interface ExtendedMarker extends Marker {
         addTo(Map): void
+        layerId: string;
     }
 
     @Component({ })
@@ -96,7 +97,7 @@
 
         private updateMarker(): void {
             // Remove all layers except main layers (e.g: google map)
-            this.map.eachLayer((layer: Layer & ExtendedLayer) => {
+            this.map.eachLayer((layer: ExtendedLayer): void => {
                 if (!layer._url) {
                     layer.removeFrom(this.map);
                     this.layerControl.removeLayer(layer);

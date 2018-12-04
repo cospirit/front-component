@@ -16,7 +16,7 @@ export interface GeoPortalJson {
 export default class GeoJson extends Vue {
     public static addPolygon(
         zone: number[][],
-        properties: Properties,
+        properties: Properties | null,
         color: string,
         opacity: number = 1,
         type: string = "Polygon",
@@ -36,7 +36,7 @@ export default class GeoJson extends Vue {
             style: this.style(color, opacity),
         };
 
-        const geoJson = L.geoJSON(geojsonFeature, options);
+        const geoJson = L.geoJSON(geojsonFeature, options);cd
         if (properties && properties.popupContent) {
             geoJson.bindPopup(properties.popupContent);
         }

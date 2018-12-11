@@ -54,7 +54,7 @@
         @Prop({ default: null }) public bounds!: LatLngBoundsExpression & string[];
         @Prop({ default: [] }) public markers!: MarkerList[];
         @Prop({ default: [] }) public mapEvents!: Event[];
-        @Prop({ default: [] }) public controls: Control[];
+        @Prop({ default: null }) public controls!: Control[];
         @Prop({ default: () => { return [] } }) public mapControls: any[];
 
         public mounted(): void {

@@ -115,7 +115,7 @@
 
             // Focus map on bounds (coordinates list)
             if (this.bounds.length > 0) {
-                this.map.flyToBounds(this.bounds, { maxZoom: 14 });
+                this.map.fitBounds(this.bounds, { maxZoom: 14 });
             }
         }
 

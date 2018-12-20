@@ -55,7 +55,7 @@ export default class GeoJson extends Vue {
     public static toJson(strWkt: string): GeoPortalJson {
         // regex coordinates
         let regex = /(-?\d+\.?[0-9]*)\s(-?\d+\.?[0-9]+)/g;
-        let subst = "[$2,$1]";
+        let subst = "[$1,$2]";
         strWkt = strWkt.replace(regex, subst);
 
         // regex type

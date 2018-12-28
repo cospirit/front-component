@@ -21,6 +21,7 @@ export default class GeoJson extends Vue {
         opacity: number = 1,
         type: string = "Polygon",
         contextMenu: LeafletEventHandlerFn | null = null,
+        weight: number = 1,
     ): GeoJSON {
         const geojsonFeature: any = {
             "type": "Feature",
@@ -33,7 +34,7 @@ export default class GeoJson extends Vue {
             }
         };
         const options: GeoJSONOptions = {
-            style: this.style(color, opacity),
+            style: this.style(color, opacity, weight),
         };
 
         const geoJson = L.geoJSON(geojsonFeature, options);
@@ -48,8 +49,8 @@ export default class GeoJson extends Vue {
         return geoJson;
     }
 
-    public static style(color: string, opacity: number): any {
-        return { color, opacity };
+    public static style(color: string, opacity: number, weight: number): any {
+        return { color, opacity, weight };
     }
 
     public static toJson(strWkt: string): GeoPortalJson {

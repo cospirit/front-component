@@ -7,21 +7,28 @@ export interface Data {
     data: any;
 }
 
+const getHeaders = () => {
+    return {
+        "X-Requested-With": "XMLHttpRequest",
+        "Authorization" : "Bearer "+localStorage.token,
+    };
+};
+
 export default class Http {
     public static search(link: string, params: object, successFunction: any, errorFunction: any): void {
-        Http.call($http.post(link, params), successFunction, errorFunction);
+        Http.call($http.post(link, params, { headers: getHeaders()}), successFunction, errorFunction);
     }
 
     public static create(link: string, params: object, successFunction: any, errorFunction: any): void {
-        Http.call($http.post(link, params), successFunction, errorFunction);
+        Http.call($http.post(link, params, { headers: getHeaders()}), successFunction, errorFunction);
     }
 
     public static save(link: string, params: object, successFunction: any, errorFunction: any): void {
-        Http.call($http.patch(link, params), successFunction, errorFunction);
+        Http.call($http.patch(link, params, { headers: getHeaders()}), successFunction, errorFunction);
     }
 
     public static delete(link: string, params: object, successFunction: any, errorFunction: any): void {
-        Http.call($http.delete(link, { data: params }), successFunction, errorFunction);
+        Http.call($http.delete(link, { data: params, headers: getHeaders() }), successFunction, errorFunction);
     }
 
     private static call(axios: any, successFunction: any, errorFunction: any): void {

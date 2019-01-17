@@ -136,7 +136,7 @@ export default class Map extends Vue {
         });
 
         // Focus map on bounds (coordinates list)
-        if (this.bounds.length > 0) {
+        if (this.bounds && this.bounds.length > 0) {
             this.map.fitBounds(this.bounds, { maxZoom: 14 });
         }
     }

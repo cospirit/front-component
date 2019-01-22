@@ -5,6 +5,7 @@
                 v-for="(option, key) in options"
                 :value="option.key"
                 :key="key"
+                :disabled="option.disabled"
             >
                 {{ option.label | trans }}
             </option>

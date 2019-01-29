@@ -1,7 +1,7 @@
 import Http, {Data} from "cospirit-front-component/Http";
 import M from "materialize-css";
 
-const UPDATE_CURRENT_TRANSLATION = "UPDATE_CURRENT_TRANSLATION";
+const TRANSLATION_ROUTE = "/search/translation";
 
 interface Translation {
     source: string;
@@ -12,11 +12,6 @@ interface Translation {
 export default {
     state: {
         translations: [],
-    },
-    mutations: {
-        [UPDATE_CURRENT_TRANSLATION]: (state: any, translations: any) => {
-            state.translations = translations;
-        },
     },
     getters: {
         translate: (state: any) => {
@@ -34,7 +29,7 @@ export default {
         },
         loadTranslations: (state: any) => {
 
-            return (route: string, context: string, next: any) => {
+            return (context: string) => {
                 const params = {
                     filters: {
                         context: context,
@@ -48,9 +43,9 @@ export default {
                 };
 
                 Http.search(
-                    route,
+                    TRANSLATION_ROUTE,
                     params,
-                    (data: Data) => { state.translations = data.data; next(); },
+                    (data: Data) => { state.translations = data.data; },
                     (error: Data) => {
                         state.translations = null;
                         M.toast({ html: error.message, classes: "red"});

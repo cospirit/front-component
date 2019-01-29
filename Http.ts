@@ -10,9 +10,12 @@ export interface Data {
 const getHeaders = () => {
     return {
         "X-Requested-With": "XMLHttpRequest",
-        "Authorization" : "Bearer "+localStorage.token,
+        "Authorization" : "Bearer "+localStorage.getItem("access_token"),
     };
 };
+
+// Define default base url for API
+$http.defaults.baseURL = process.env.VUE_APP_API;
 
 export default class Http {
     public static search(link: string, params: object, successFunction: any, errorFunction: any): void {

@@ -5,7 +5,7 @@
             href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
             integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
             crossorigin="">
-        <div id="map" :style="{ width: width, height: height }" />
+        <div id="map" :style="{ width: width, height: height, cursor: cursor }" />
     </div>
 </template>
 
@@ -62,6 +62,7 @@ export default class Map extends Vue {
 
     @Prop({ default: "500px" }) public width!: string;
     @Prop({ default: "500px" }) public height!: string;
+    @Prop({ default: "default" }) public cursor!: string;
     @Prop({ default: 10 }) public zoom!: number;
     @Prop({ default: null }) public bounds!: LatLngBoundsExpression & string[];
     @Prop({ default: [] }) public markers!: MarkerList[];

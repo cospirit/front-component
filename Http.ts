@@ -54,6 +54,15 @@ export default class Http {
                         errorFunction = "The operation was not able to be made, please warn the IT team.";
                     }
 
+                    if (error.response) {
+                        _.forEach(error.response.data.status.messages, (messages: string[], fieldName: string) => {
+                            errorFunction += fieldName + " : ";
+                            messages.forEach((message) => {
+                                errorFunction += message + "<br>";
+                            });
+                        });
+                    }
+
                     M.toast({
                         html: errorFunction,
                         classes: "red",

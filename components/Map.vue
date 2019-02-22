@@ -48,7 +48,6 @@ interface Event {
 }
 
 export interface ExtendedMarker extends Marker {
-    addTo(Map): void
     layerId: string;
 }
 

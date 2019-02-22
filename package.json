@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "jwt-simple": "^0.5.5",
     "axios": "^0.18.0",
+    "jwt-simple": "^0.5.5",
+    "leaflet-fullscreen": "^1.0.2",
     "lodash": "^4.17.10",
     "materialize-css": "^1.0.0",
     "moment": "^2.22.2",
@@ -13,8 +14,7 @@
     "vue-material": "^1.0.0-beta-10.2",
     "vue-property-decorator": "^7.0.0",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1",
-    "leaflet-fullscreen": "^1.0.2"
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@types/jwt-simple": "^0.5.33",

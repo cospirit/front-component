@@ -66,16 +66,43 @@ export default class Pin {
         const reg = new RegExp("^#");
         if (reg.test(icon)) {
             url = "data:image/svg+xml;charset=utf-8," +
-                "<svg fill='" + icon + "' height='36' viewBox='0 0 24 24' width='36' xmlns='http://www.w3.org/2000/svg'>" +
-                "<path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0" +
-                "9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/>" +
-                "<path d='M0 0h24v24H0z' fill='none'/>" +
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" style='fill: " + Pin.HEX2RGB(icon) + "'>" +
+                "<path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm09.5c-1.38 " +
+                "0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/>" +
                 "</svg>";
         }
 
         return L.icon({
             iconUrl: url,
-            iconAnchor: [18, 30],
+            iconAnchor: [18, 18],
         });
+    }
+
+    public static HEX2RGB(hex: string): string {
+        if ("#" === hex.charAt(0)) {
+            hex = hex.substr(1);
+        }
+        if ((2 > hex.length) || (6 < hex.length)) {
+            return "";
+        }
+        var values = hex.split(""), r, g, b;
+
+        if (2 === hex.length) {
+            r = parseInt(values[0].toString() + values[1].toString(), 16);
+            g = r;
+            b = r;
+        } else if (3 === hex.length) {
+            r = parseInt(values[0].toString() + values[0].toString(), 16);
+            g = parseInt(values[1].toString() + values[1].toString(), 16);
+            b = parseInt(values[2].toString() + values[2].toString(), 16);
+        } else if (6 === hex.length) {
+            r = parseInt(values[0].toString() + values[1].toString(), 16);
+            g = parseInt(values[2].toString() + values[3].toString(), 16);
+            b = parseInt(values[4].toString() + values[5].toString(), 16);
+        } else {
+            return "";
+        }
+
+        return "rgb(" + r + "," + g + "," + b + ")";
     }
 }

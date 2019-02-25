@@ -16,6 +16,7 @@ import { Prop, Watch } from "vue-property-decorator";
 import L, { Marker, Map as LeafleatMap, LatLngBoundsExpression, Layer, Control, LayerGroup }  from "leaflet";
 import "leaflet-fullscreen";
 import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
+import _ from "lodash";
 
 interface LayerControl {
     _layers: IControl[];
@@ -47,7 +48,6 @@ interface Event {
 }
 
 export interface ExtendedMarker extends Marker {
-    addTo(Map): void
     layerId: string;
 }
 

@@ -39,7 +39,7 @@ export default class GeoJson extends Vue {
 
         const geoJson = L.geoJSON(geojsonFeature, options);
         if (properties && properties.popupContent) {
-            geoJson.bindPopup(properties.popupContent);
+            geoJson.bindPopup(properties.popupContent, { minWidth: 350 });
         }
 
         if (contextMenu) {

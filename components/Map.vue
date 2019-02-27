@@ -69,6 +69,7 @@ export default class Map extends Vue {
     @Prop({ default: [] }) public mapEvents!: Event[];
     @Prop({ default: null }) public controls!: Control[];
     @Prop({ default: () => { return [] } }) public mapControls: any[];
+    @Prop() public resize: number;
 
     public mounted(): void {
         this.map = L.map("map").setView(
@@ -92,6 +93,10 @@ export default class Map extends Vue {
         this.mapControls.forEach((control: Control) => {
             control.addTo(this.map);
         });
+    }
+
+    @Watch("resize") public resizeMap() {
+        this.map.invalidateSize();
     }
 
     @Watch("markers") public onMarkersChange(newValue, oldValue) {

@@ -5,7 +5,7 @@
             href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
             integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
             crossorigin="">
-        <div id="map" :style="{ width: width, height: height }" />
+        <div id="map" :style="{ width: width, height: height, cursor: cursor }" />
     </div>
 </template>
 
@@ -62,12 +62,14 @@ export default class Map extends Vue {
 
     @Prop({ default: "500px" }) public width!: string;
     @Prop({ default: "500px" }) public height!: string;
+    @Prop({ default: "default" }) public cursor!: string;
     @Prop({ default: 10 }) public zoom!: number;
     @Prop({ default: null }) public bounds!: LatLngBoundsExpression & string[];
     @Prop({ default: [] }) public markers!: MarkerList[];
     @Prop({ default: [] }) public mapEvents!: Event[];
     @Prop({ default: null }) public controls!: Control[];
     @Prop({ default: () => { return [] } }) public mapControls: any[];
+    @Prop() public resize: number;
 
     public mounted(): void {
         this.map = L.map("map").setView(
@@ -91,6 +93,10 @@ export default class Map extends Vue {
         this.mapControls.forEach((control: Control) => {
             control.addTo(this.map);
         });
+    }
+
+    @Watch("resize") public resizeMap() {
+        this.map.invalidateSize();
     }
 
     @Watch("markers") public onMarkersChange(newValue, oldValue) {

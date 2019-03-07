@@ -13,7 +13,8 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
-import L, { Marker, Map as LeafleatMap, LatLngBoundsExpression, Layer, Control, LayerGroup }  from "leaflet";
+import L, { LatLngBoundsExpression, Layer, LayerGroup, Control } from "leaflet";
+import { LMarker, LMap as LeafleatMap  }  from "vue2-leaflet";
 import "leaflet-fullscreen";
 import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
 import _ from "lodash";
@@ -47,7 +48,7 @@ interface Event {
     eventAction: any;
 }
 
-export interface ExtendedMarker extends Marker {
+export interface ExtendedMarker extends LMarker {
     layerId: string;
 }
 
@@ -68,7 +69,7 @@ export default class Map extends Vue {
     @Prop({ default: [] }) public markers!: MarkerList[];
     @Prop({ default: [] }) public mapEvents!: Event[];
     @Prop({ default: null }) public controls!: Control[];
-    @Prop({ default: () => { return [] } }) public mapControls: any[];
+    @Prop({ default: () => { return [] } }) public mapControls: Control[];
     @Prop() public resize: number;
 
     public mounted(): void {
@@ -88,8 +89,14 @@ export default class Map extends Vue {
                 subdomains: [ "mt0" ],
             },
         ).addTo(this.map);
+
         this.layerControl = L.control.layers({ "Satelite": satellite, "Plan": plan }).addTo(this.map);
+        this.controls.forEach((control: Control) => {
+            this.layerControl.addBaseLayer(control, control.name)
+        });
+
         this.map.addControl(new L.control.fullscreen());
+
         this.mapControls.forEach((control: Control) => {
             control.addTo(this.map);
         });
@@ -156,6 +163,17 @@ export default class Map extends Vue {
     @Watch("mapControls") public onControlsChange() {
         this.mapControls.forEach((control: Control) => {
             control.addTo(this.map);
+        });
+    }
+
+    @Watch("controls") public onControlsChange() {
+        this.controls.forEach((control: Control) => {
+            if (this.layerControl._layers) {
+                _.remove(this.layerControl._layers, (layerControl: IControl) => {
+                    return layerControl.name === control.name;
+                });
+            }
+            this.layerControl.addBaseLayer(control, control.name)
         });
     }
 

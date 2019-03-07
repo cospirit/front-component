@@ -5,6 +5,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "jwt-simple": "^0.5.5",
+    "leaflet": "^1.4.0",
     "leaflet-fullscreen": "^1.0.2",
     "lodash": "^4.17.10",
     "materialize-css": "^1.0.0",
@@ -14,6 +15,7 @@
     "vue-material": "^1.0.0-beta-10.2",
     "vue-property-decorator": "^7.0.0",
     "vue-router": "^3.0.1",
+    "vue2-leaflet": "^2.0.2",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

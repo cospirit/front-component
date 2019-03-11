@@ -58,7 +58,10 @@ export default {
                 router.beforeEach((to: Route, from: Route, next: any) => {
                     // Set current access_token
                     if ("token" === to.name) {
-                        localStorage.setItem("access_token", to.hash.replace("#id_token=", ""));
+                        localStorage.setItem("access_token", to.query.code ? to.query.code : "");
+                        state.refreshUser(state, router, afterLoad);
+
+                        return;
                     }
 
                     // get access_token

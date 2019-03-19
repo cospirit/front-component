@@ -18,7 +18,7 @@ export default {
             return value;
         });
 
-        Vue.filter("price", (value: number, precision = 2) => {
+        Vue.filter("price", (value: number, precision: number = 2) => {
             if (isNaN(value)) {
                 value = 0.0;
             }
@@ -34,7 +34,22 @@ export default {
             return formatter.format(value);
         });
 
-        Vue.filter("number", (value: number, precision = 2, suffix = "") => {
+        Vue.filter("percent", (value: number, precision: number = 1) => {
+            if (isNaN(value)) {
+                return "";
+            }
+
+            const locale = "fr";
+            const options = {
+                minimumFractionDigits: precision,
+                maximumFractionDigits: precision,
+            };
+            const formatter = new Intl.NumberFormat(locale, options);
+
+            return formatter.format(value) + " %";
+        });
+
+        Vue.filter("number", (value: number, precision: number = 2, suffix: string = "") => {
             if (isNaN(value)) {
                 value = 0.0;
             }
@@ -47,6 +62,10 @@ export default {
             const formatter = new Intl.NumberFormat(locale, options);
 
             return formatter.format(value) + suffix;
+        });
+
+        Vue.filter("string", (value: string, prefix: string = "", suffix: string = "") => {
+            return prefix + value + suffix;
         });
     },
 };

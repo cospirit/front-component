@@ -64,6 +64,21 @@ export default {
             return formatter.format(value) + suffix;
         });
 
+        Vue.filter("int", (value: number, precision: number = 0, suffix: string = "") => {
+            if (isNaN(value)) {
+                value = 0;
+            }
+
+            const locale = "fr";
+            const options = {
+                minimumFractionDigits: precision,
+                maximumFractionDigits: precision,
+            };
+            const formatter = new Intl.NumberFormat(locale, options);
+
+            return formatter.format(value) + suffix;
+        });
+
         Vue.filter("string", (value: string, prefix: string = "", suffix: string = "") => {
             return prefix + value + suffix;
         });

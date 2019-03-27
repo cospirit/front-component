@@ -43,7 +43,7 @@ export interface ExtendedLayer extends Layer {
     layerName: string;
 }
 
-interface Event {
+export interface Event {
     eventType: string;
     eventAction: any;
 }

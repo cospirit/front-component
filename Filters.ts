@@ -18,10 +18,14 @@ export default {
             return value;
         });
 
-        Vue.filter("price", (value: number, precision: number = 2) => {
-            if (isNaN(value)) {
-                value = 0.0;
+        Vue.filter("price", (value: any | string, precision: number = 2) => {
+            if(typeof value === "string" && value.length > 0) {
+                value = parseInt(value);
             }
+            if (typeof value !== "number") {
+                return "";
+            }
+
             const locale = "fr";
             const options = {
                 style: "currency",
@@ -34,8 +38,11 @@ export default {
             return formatter.format(value);
         });
 
-        Vue.filter("percent", (value: number, precision: number = 1) => {
-            if (isNaN(value)) {
+        Vue.filter("percent", (value: any, precision: number = 1) => {
+            if(typeof value === "string" && value.length > 0) {
+                value = parseInt(value);
+            }
+            if (typeof value !== "number") {
                 return "";
             }
 
@@ -49,9 +56,12 @@ export default {
             return formatter.format(value) + " %";
         });
 
-        Vue.filter("number", (value: number, precision: number = 2, suffix: string = "") => {
-            if (isNaN(value)) {
-                value = 0.0;
+        Vue.filter("number", (value: any, precision: number = 2, suffix: string = "") => {
+            if(typeof value === "string" && value.length > 0) {
+                value = parseInt(value);
+            }
+            if (typeof value !== "number") {
+                return "";
             }
 
             const locale = "fr";
@@ -64,9 +74,12 @@ export default {
             return formatter.format(value) + suffix;
         });
 
-        Vue.filter("int", (value: number, precision: number = 0, suffix: string = "") => {
-            if (isNaN(value)) {
-                value = 0;
+        Vue.filter("int", (value: any, precision: number = 0, suffix: string = "") => {
+            if(typeof value === "string" && value.length > 0) {
+                value = parseInt(value);
+            }
+            if (typeof value !== "number") {
+                return "";
             }
 
             const locale = "fr";

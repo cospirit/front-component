@@ -1,5 +1,23 @@
 import moment from "moment";
 
+const formatNumber = (value: any, precision: number, suffix: string = "") => {
+    if(typeof value === "string" && value.length > 0) {
+        value = parseInt(value);
+    }
+    if (typeof value !== "number") {
+        return "";
+    }
+
+    const locale = "fr";
+    const options = {
+        minimumFractionDigits: precision,
+        maximumFractionDigits: precision,
+    };
+    const formatter = new Intl.NumberFormat(locale, options);
+
+    return formatter.format(value) + suffix;
+};
+
 export default {
     install(Vue: any) {
         Vue.filter("date", (value: string, entryFormat: string, displayFormat: string) => {
@@ -18,65 +36,20 @@ export default {
             return value;
         });
 
-        Vue.filter("price", (value: number, precision: number = 2) => {
-            if (isNaN(value)) {
-                value = 0.0;
-            }
-            const locale = "fr";
-            const options = {
-                style: "currency",
-                currency: "eur",
-                minimumFractionDigits: precision,
-                maximumFractionDigits: precision,
-            };
-            const formatter = new Intl.NumberFormat(locale, options);
-
-            return formatter.format(value);
+        Vue.filter("price", (value: any, precision: number = 2) => {
+            return formatNumber(value, precision, " €");
         });
 
-        Vue.filter("percent", (value: number, precision: number = 1) => {
-            if (isNaN(value)) {
-                return "";
-            }
-
-            const locale = "fr";
-            const options = {
-                minimumFractionDigits: precision,
-                maximumFractionDigits: precision,
-            };
-            const formatter = new Intl.NumberFormat(locale, options);
-
-            return formatter.format(value) + " %";
+        Vue.filter("percent", (value: any, precision: number = 1) => {
+            return formatNumber(value, precision, " %");
         });
 
-        Vue.filter("number", (value: number, precision: number = 2, suffix: string = "") => {
-            if (isNaN(value)) {
-                value = 0.0;
-            }
-
-            const locale = "fr";
-            const options = {
-                minimumFractionDigits: precision,
-                maximumFractionDigits: precision,
-            };
-            const formatter = new Intl.NumberFormat(locale, options);
-
-            return formatter.format(value) + suffix;
+        Vue.filter("number", (value: any, precision: number = 2, suffix: string = "") => {
+            return formatNumber(value, precision, suffix);
         });
 
-        Vue.filter("int", (value: number, precision: number = 0, suffix: string = "") => {
-            if (isNaN(value)) {
-                value = 0;
-            }
-
-            const locale = "fr";
-            const options = {
-                minimumFractionDigits: precision,
-                maximumFractionDigits: precision,
-            };
-            const formatter = new Intl.NumberFormat(locale, options);
-
-            return formatter.format(value) + suffix;
+        Vue.filter("int", (value: any, precision: number = 0, suffix: string = "") => {
+            return formatNumber(value, precision, suffix);
         });
 
         Vue.filter("string", (value: string, prefix: string = "", suffix: string = "") => {

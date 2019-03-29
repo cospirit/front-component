@@ -14,7 +14,7 @@ const refreshToken = (state: any, router: Router, afterLoad: any) => {
 
     Http.search(
         LOGIN_ROUTE,
-        {"fields": [ "token",  "user.uuid",  "user.displayName", "user.email", "user.roles"]},
+        {"fields": [ "token",  "user.uuid",  "user.displayName", "user.email", "user.roles", "user.department.uuid", "user.department.name"]},
         (data: Data) => {
             state.currentUser = data.data.user;
             localStorage.setItem("access_token", data.data.token);

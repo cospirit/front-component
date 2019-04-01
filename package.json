@@ -33,6 +33,7 @@
   "files": [
     "components/*.vue",
     "modules/*.ts",
+    "leaflet-geosearch/",
     "*.ts",
     "*.js",
     "*.css"

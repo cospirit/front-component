@@ -16,7 +16,9 @@
     "vue-property-decorator": "^7.0.0",
     "vue-router": "^3.0.1",
     "vue2-leaflet": "^2.0.2",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "lodash.debounce": "^4.0.8",
+    "nodent-runtime": "^3.0.4"
   },
   "devDependencies": {
     "@types/jwt-simple": "^0.5.33",
@@ -31,6 +33,8 @@
   "files": [
     "components/*.vue",
     "modules/*.ts",
-    "*.ts"
+    "*.ts",
+    "*.js",
+    "*.css"
   ]
 }

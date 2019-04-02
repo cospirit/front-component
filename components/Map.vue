@@ -17,6 +17,8 @@ import L, { LatLngBoundsExpression, Layer, LayerGroup, Control } from "leaflet";
 import { LMarker, LMap as LeafleatMap  }  from "vue2-leaflet";
 import "leaflet-fullscreen";
 import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
+import "../streetview/streetview";
+import "../streetview/streetview.css";
 import _ from "lodash";
 
 interface LayerControl {
@@ -94,6 +96,13 @@ export default class Map extends Vue {
         this.controls.forEach((control: Control) => {
             this.layerControl.addBaseLayer(control, control.name)
         });
+
+        var pegmanControl = new L.Control.Pegman({
+            position: 'bottomright',
+            clickableStreetViewLayer: false, // WARNING: when enabled it will violate Google ToS rules
+            theme: "leaflet-pegman",
+        });
+        pegmanControl.addTo(this.map);
 
         this.map.addControl(new L.control.fullscreen());
 

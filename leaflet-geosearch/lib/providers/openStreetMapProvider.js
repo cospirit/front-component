@@ -47,7 +47,8 @@ var Provider = function (_BaseProvider) {
         q: query
       }));
 
-      return 'https://nominatim.openstreetmap.org/search?' + paramString;
+      // Add viewbox and bounded to search in France and around
+      return 'https://nominatim.openstreetmap.org/search?viewbox=-6,52,10,41&bounded=1&' + paramString;
     }
   }, {
     key: 'endpointReverse',

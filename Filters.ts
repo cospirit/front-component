@@ -2,7 +2,7 @@ import moment from "moment";
 
 const formatNumber = (value: any, precision: number, suffix: string = "") => {
     if(typeof value === "string" && value.length > 0) {
-        value = parseInt(value);
+        value = parseFloat(value);
     }
     if (typeof value !== "number") {
         return "";

@@ -37,13 +37,21 @@ export default class Pin {
         );
     }
 
-    public static createMarker(lat: number, lng: number, icon: string, clickable: any, draggable: any): Marker {
+    public static createMarker(
+        lat: number,
+        lng: number,
+        icon: string,
+        clickable: any,
+        draggable: any,
+        width: number = 24,
+        height: number = 24,
+    ): Marker {
         const marker = L.marker(
             [ lat, lng ],
             {
                 draggable: !!draggable,
                 clickable: !!clickable,
-                icon: this.getCustomMarkerSvgCode(icon),
+                icon: this.getCustomMarkerSvgCode(icon, width, height),
             },
         );
 
@@ -60,7 +68,7 @@ export default class Pin {
         return marker;
     }
 
-    public static getCustomMarkerSvgCode(icon: string): Icon {
+    public static getCustomMarkerSvgCode(icon: string, width: number, height: number): Icon {
         icon = icon ? icon : "#1B5E20";
         let url = icon;
         const reg = new RegExp("^#");
@@ -76,6 +84,7 @@ export default class Pin {
         return L.icon({
             iconUrl: url,
             iconAnchor: [18, 18],
+            iconSize: [width, height],
         });
     }
 

@@ -32,7 +32,7 @@ export default {
             return (context: string) => {
                 const params = {
                     filters: {
-                        context: context,
+                        context,
                     },
                     fields: [
                         "source",

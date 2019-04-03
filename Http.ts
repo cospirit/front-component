@@ -10,7 +10,7 @@ export interface Data {
 const getHeaders = () => {
     return {
         "X-Requested-With": "XMLHttpRequest",
-        "Authorization" : "Bearer "+localStorage.getItem("access_token"),
+        "Authorization" : "Bearer " + localStorage.getItem("access_token"),
     };
 };
 

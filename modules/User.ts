@@ -14,7 +14,17 @@ const refreshToken = (state: any, router: Router, afterLoad: any) => {
 
     Http.search(
         LOGIN_ROUTE,
-        {"fields": [ "token",  "user.uuid",  "user.displayName", "user.email", "user.roles", "user.department.uuid", "user.department.name"]},
+        {
+            fields: [
+                "token",
+                "user.uuid",
+                "user.displayName",
+                "user.email",
+                "user.roles",
+                "user.department.uuid",
+                "user.department.name",
+            ],
+        },
         (data: Data) => {
             state.currentUser = data.data.user;
             localStorage.setItem("access_token", data.data.token);
@@ -31,7 +41,7 @@ const refreshToken = (state: any, router: Router, afterLoad: any) => {
 
             // refresh all 3 mn
             if (!state.timeoutId) {
-                state.timeoutId = setTimeout(() => { refreshToken(state, router)}, 60*3*1000);
+                state.timeoutId = setTimeout(() => { refreshToken(state, router); }, 60 * 3 * 1000);
             }
         },
         (error: Data) => {
@@ -65,18 +75,21 @@ export default {
                     }
 
                     // get access_token
-                    const access_token = localStorage.getItem("access_token");
+                    const accesToken: string | null = localStorage.getItem("access_token");
 
-                    // Test valid access_token
                     let validToken = false;
-                    try {
-                        const token = decode(access_token, null, true);
-                        if (token.exp <= (new Date()).getTime()/1000) {
-                            localStorage.setItem("access_token", "");
-                        } else {
-                            validToken = true;
+                    if (accesToken) {
+                        // Test valid access_token
+                        try {
+                            const token = decode(accesToken, null, true);
+                            if (token.exp <= (new Date()).getTime() / 1000) {
+                                localStorage.setItem("access_token", "");
+                            } else {
+                                validToken = true;
+                            }
+                        } catch (error) {
+                            console.log("Token decode error : " + error);
                         }
-                    } catch(error) {
                     }
 
                     // access_token not valid
@@ -95,7 +108,7 @@ export default {
                         state.refreshUser(state, router, afterLoad);
                     }
 
-                     next();
+                    next();
                 });
             };
         },

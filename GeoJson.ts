@@ -9,7 +9,7 @@ export interface Properties {
 
 export interface GeoPortalJson {
     type: string;
-    coordinates: string
+    coordinates: string;
 }
 
 @Component({})
@@ -24,14 +24,14 @@ export default class GeoJson extends Vue {
         weight: number = 1,
     ): GeoJSON {
         const geojsonFeature: any = {
-            "type": "Feature",
-            "properties": properties,
-            "geometry": {
-                "type": type,
-                "coordinates": [
-                    zone
-                ]
-            }
+            type: "Feature",
+            properties,
+            geometry: {
+                type,
+                coordinates: [
+                    zone,
+                ],
+            },
         };
         const options: GeoJSONOptions = {
             style: this.style(color, opacity, weight),

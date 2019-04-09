@@ -6,6 +6,7 @@
     "lint": " tslint --fix --project ./tsconfig.json"
   },
   "dependencies": {
+    "@types/googlemaps": "^3.30.19",
     "axios": "^0.18.0",
     "jwt-simple": "^0.5.5",
     "leaflet": "^1.4.0",

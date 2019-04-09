@@ -1,4 +1,4 @@
-import {TravelMode, DistanceMatrixResponse, DistanceMatrixResponseRow, DistanceMatrixStatus} from "googlemaps";
+import {} from "googlemaps";
 import {LatLng} from "leaflet";
 
 interface PointToDestination {
@@ -22,8 +22,8 @@ export default class GoogleIsochrone {
     public static isoCurve(options: IsoCurveOption): void {
 
         // Normalize options
-        const graph: TravelMode = options.graph && "DRIVING" === options.graph ?
-            TravelMode.DRIVING : TravelMode.WALKING;
+        const graph: google.maps.TravelMode = options.graph && "DRIVING" === options.graph ?
+            google.maps.TravelMode.DRIVING : google.maps.TravelMode.WALKING;
         const method: string = options.method ? options.method : "time";
         const center: LatLng = options.center ? options.center : new LatLng(0, 0);
         const time: number = options.time ? options.time : 1;
@@ -64,7 +64,7 @@ export default class GoogleIsochrone {
     private static processIsoCurve(
         offset: number,
         center: LatLng,
-        graph: TravelMode,
+        graph: google.maps.TravelMode,
         method: string,
         radius: number,
         radiusLatLng: LatLng,
@@ -90,14 +90,14 @@ export default class GoogleIsochrone {
                 destinations: [center.lat + " " + center.lng],
                 travelMode: graph,
             },
-            (response: DistanceMatrixResponse, status: DistanceMatrixStatus) => {
+            (response: google.maps.DistanceMatrixResponse, status: google.maps.DistanceMatrixStatus) => {
 
                 if (!response) {
                     onError(status);
                     return;
                 }
 
-                response.rows.forEach((row: DistanceMatrixResponseRow, key: number) => {
+                response.rows.forEach((row: google.maps.DistanceMatrixResponseRow, key: number) => {
                     if (row.elements.length && row.elements[0].duration) {
                         // Compute radiusLatLng corrected by interpolated google duration
                         const coeffMethod =  "time" === method ? 60 : 1000;

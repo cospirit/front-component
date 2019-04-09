@@ -1,4 +1,4 @@
-import {TravelMode, DistanceMatrixResponse, DistanceMatrixResponseRow, DistanceMatrixStatus} from "@types/googlemaps";
+import {TravelMode, DistanceMatrixResponse, DistanceMatrixResponseRow, DistanceMatrixStatus} from "googlemaps";
 import {LatLng} from "leaflet";
 
 interface PointToDestination {

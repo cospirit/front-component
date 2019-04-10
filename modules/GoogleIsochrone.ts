@@ -100,8 +100,12 @@ export default class GoogleIsochrone {
                 response.rows.forEach((row: google.maps.DistanceMatrixResponseRow, key: number) => {
                     if (row.elements.length && row.elements[0].duration) {
                         // Compute radiusLatLng corrected by interpolated google duration
-                        const coeffMethod =  "time" === method ? 60 : 1000;
-                        const coeffRadius = radius * coeffMethod / row.elements[0].duration.value;
+                        let coeffRadius = 1;
+                        if ("time" === method) {
+                            coeffRadius = 60 / row.elements[0].duration.value;
+                        } else {
+                            coeffRadius = 1000 / row.elements[0].distance.value;
+                        }
                         const rowRadiusLatLng: LatLng = GoogleIsochrone.getRadiusLatLng(center, radius * coeffRadius);
 
                         // Compute point form radiusLatLng corrected

@@ -37,10 +37,11 @@ export default class GoogleIsochrone {
         const searchPoints: PointToDestination[]  = [];
 
         // Only 100 points : Limited Query by Google API
-        for (let a = 0; a < 100; a ++) {
-            const radian = (360 / 100) * a * (Math.PI / 180);
+        for (let a = 0; a < 99; a ++) {
+            const radian = (360 / 99) * a * (Math.PI / 180);
             searchPoints.push(GoogleIsochrone.getPointFromRadiusLatLng(center, radian, radiusLatLng));
         }
+        searchPoints.push(GoogleIsochrone.getPointFromRadiusLatLng(center, 0, radiusLatLng));
 
         GoogleIsochrone.processIsoCurve(
             0,
@@ -100,11 +101,12 @@ export default class GoogleIsochrone {
                 response.rows.forEach((row: google.maps.DistanceMatrixResponseRow, key: number) => {
                     if (row.elements.length && row.elements[0].duration) {
                         // Compute radiusLatLng corrected by interpolated google duration
-                        let coeffRadius = 1;
+                        let coeffRadius: number = 1;
+                        console.log(row.elements[0]);
                         if ("time" === method) {
-                            coeffRadius = 60 / row.elements[0].duration.value;
+                            coeffRadius = radius * 60 / row.elements[0].duration.value;
                         } else {
-                            coeffRadius = 1000 / row.elements[0].distance.value;
+                            coeffRadius = radius * 1000 / row.elements[0].distance.value;
                         }
                         const rowRadiusLatLng: LatLng = GoogleIsochrone.getRadiusLatLng(center, radius * coeffRadius);
 

@@ -5,7 +5,7 @@
             href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
             integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
             crossorigin="">
-        <div id="map" :style="{ width: width, height: height, cursor: cursor }" />
+        <div :id="idMap" :style="{ width: width, height: height, cursor: cursor }" />
     </div>
 </template>
 
@@ -13,19 +13,15 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
-import L, { LatLngBoundsExpression, Layer, LayerGroup, Control } from "leaflet";
+import L, { LatLngBoundsExpression, Layer, LayerGroup, Control, Map, LeafletMouseEvent } from "leaflet";
 import { LMarker, LMap as LeafleatMap  }  from "vue2-leaflet";
+import { GeoSearchControl, OpenStreetMapProvider } from "../leaflet-geosearch/lib/index.js";
+import Pin from "../Pin"
 import "leaflet-fullscreen";
 import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
 import "../streetview/streetview";
 import "../streetview/streetview.css";
 import _ from "lodash";
-
-interface LayerControl {
-    _layers: IControl[];
-    addOverlay(layer: object, name: string): void;
-    removeLayer(layer: object): void;
-}
 
 interface IControl {
     layer: string;
@@ -58,10 +54,48 @@ export interface ExtendedLayerGroup extends LayerGroup {
     layerName: string;
 }
 
+export interface EventClick {
+    dispatchClick(ev: LeafletMouseEvent): void
+}
+
+export interface Options {
+    sidebar?: {
+        active: boolean;
+        options?: object;
+    };
+    traffic?: {
+        active: boolean;
+        name: string;
+        options?: object;
+    };
+    transit?: {
+        active: boolean;
+        name: string;
+        options?: object;
+    };
+    bike?: {
+        active: boolean;
+        name: string;
+        options?: object;
+    };
+    address?: {
+        active: boolean;
+        name: string;
+        options?: object;
+    };
+    draw?: {
+        active: boolean;
+        options?: object;
+    };
+
+    eventClick?: EventClick[];
+}
+
 @Component({ })
 export default class Map extends Vue {
-    private layerControl: LayerControl;
-    private map: LeafleatMap;
+    private layerControl: Control.Layers;
+    private eventclicks: EventClick[] = [];
+    private map: Map;
 
     @Prop({ default: "500px" }) public width!: string;
     @Prop({ default: "500px" }) public height!: string;
@@ -73,9 +107,11 @@ export default class Map extends Vue {
     @Prop({ default: null }) public controls!: Control[];
     @Prop({ default: () => { return [] } }) public mapControls: Control[];
     @Prop() public resize: number;
+    @Prop({ default: "map" }) public idMap: string;
+    @Prop({ }) public options: Options;
 
     public mounted(): void {
-        this.map = L.map("map").setView(
+        this.map = L.map(this.idMap).setView(
             [ 45.749095 , 4.82665 ],
             this.zoom,
         );
@@ -109,6 +145,8 @@ export default class Map extends Vue {
         this.mapControls.forEach((control: Control) => {
             control.addTo(this.map);
         });
+
+        this.loadOptions();
     }
 
     @Watch("resize") public resizeMap() {
@@ -192,6 +230,105 @@ export default class Map extends Vue {
         layer.layerName = markerList.name;
         layer.addTo(this.map);
         this.layerControl.addOverlay(layer, markerList.name);
+    }
+
+    private loadOptions() {
+        if (this.options) {
+            if (this.options.sidebar && true === this.options.sidebar.active) {
+                L.control.sidebar(
+                    this.options.sidebar.options
+                    || {
+                        autopan: true,
+                        closeButton: false,
+                        container: "sidebar",
+                        position: "left",
+                    }
+                ).addTo(this.map);
+            }
+
+            if (this.options.traffic && true === this.options.traffic.active) {
+                const trafficMutant = L.gridLayer.googleMutant(
+                    this.options.traffic.options
+                    || {
+                        maxZoom: 20,
+                        type: "roadmap",
+                    }
+                );
+                trafficMutant.addGoogleLayer("TrafficLayer");
+                trafficMutant.name = this.options.traffic.name;
+                this.layerControl.addBaseLayer(trafficMutant,trafficMutant.name);
+            }
+
+            if (this.options.transit && true === this.options.transit.active) {
+                const transitMutant = L.gridLayer.googleMutant(
+                    this.options.transit.options
+                    || {
+                        maxZoom: 20,
+                        type: "roadmap",
+                    }
+                );
+                transitMutant.addGoogleLayer("TransitLayer");
+                transitMutant.name = this.options.transit.name;
+                this.layerControl.addBaseLayer(transitMutant, transitMutant.name);
+            }
+
+            if (this.options.bike && true === this.options.bike.active) {
+                const bikeMutant = L.gridLayer.googleMutant(
+                    this.options.bike.options
+                    || {
+                        maxZoom: 20,
+                        type: "roadmap",
+                    }
+                );
+                bikeMutant.addGoogleLayer("BicyclingLayer");
+                bikeMutant.name = this.options.bike.name;
+                this.layerControl.addBaseLayer(bikeMutant, bikeMutant.name);
+            }
+
+            if (this.options.address && true === this.options.address.active) {
+                const provider = new OpenStreetMapProvider();
+                new GeoSearchControl(
+                    this.options.address.options
+                    || {
+                        provider,
+                        searchLabel: this.options.address.name,
+                    }
+                ).addTo(this.map);
+            }
+
+            if (this.options.draw && true === this.options.draw.active) {
+                // Set the title to show on the polygon button
+                new L.Control.Draw(
+                    this.options.draw.options
+                    || {
+                        position: 'topright',
+                        draw: {
+                            polyline: false,
+                            polygon: {
+                                metric: true,
+                                icon: new L.DivIcon({
+                                    className: 'leaflet-div-icon leaflet-editing-icon',
+                                    iconSize: new L.Point(8, 8)
+                                }),
+                            },
+                            circlemarker: false,
+                            marker: { icon: Pin.getCustomMarkerSvgCode("#00bbff", 24, 24) },
+                        }
+                    }
+                ).addTo(this.map);
+            }
+
+            if (this.options.eventClick) {
+                this.options.eventClick.forEach((eventClick: EventClick) => {
+                    this.mapEvents.push({
+                        eventType: "click",
+                        eventAction: (ev: LeafletMouseEvent) => {
+                            eventClick.dispatchClick(ev);
+                        },
+                    });
+                });
+            }
+        }
     }
 }
 </script>

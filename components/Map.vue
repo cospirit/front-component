@@ -96,6 +96,7 @@ export default class Map extends Vue {
     private layerControl: Control.Layers;
     private eventclicks: EventClick[] = [];
     private map: Map;
+    private sidebar?: L.control;
 
     @Prop({ default: "500px" }) public width!: string;
     @Prop({ default: "500px" }) public height!: string;
@@ -109,6 +110,7 @@ export default class Map extends Vue {
     @Prop() public resize: number;
     @Prop({ default: "map" }) public idMap: string;
     @Prop({ }) public options: Options;
+    @Prop({ default: null }) public sidebarControl!: object;
 
     public mounted(): void {
         this.map = L.map(this.idMap).setView(
@@ -224,6 +226,20 @@ export default class Map extends Vue {
         });
     }
 
+    @Watch("sidebarControl") public onChangeSidebarControl() {
+        if (this.sidebar) {
+            if (this.sidebarControl.action === "OPEN") {
+                this.sidebar.enablePanel(this.sidebarControl.id);
+                this.sidebar.open(this.sidebarControl.id);
+            }
+
+            if (this.sidebarControl.action === "CLOSE") {
+                this.sidebar.close(this.sidebarControl.id);
+                this.sidebar.disablePanel(this.sidebarControl.id);
+            }
+        }
+    }
+
     private addMarkerToLayer(markerList: MarkerList): void {
         const layer: ExtendedLayerGroup  = L.layerGroup(markerList.markers);
 
@@ -235,7 +251,7 @@ export default class Map extends Vue {
     private loadOptions() {
         if (this.options) {
             if (this.options.sidebar && true === this.options.sidebar.active) {
-                L.control.sidebar(
+                this.sidebar = L.control.sidebar(
                     this.options.sidebar.options
                     || {
                         autopan: true,
@@ -243,7 +259,8 @@ export default class Map extends Vue {
                         container: "sidebar",
                         position: "left",
                     }
-                ).addTo(this.map);
+                );
+                this.sidebar.addTo(this.map);
             }
 
             if (this.options.traffic && true === this.options.traffic.active) {

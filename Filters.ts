@@ -15,7 +15,12 @@ const formatNumber = (value: any, precision: number, suffix: string = "") => {
     };
     const formatter = new Intl.NumberFormat(locale, options);
 
-    return formatter.format(value) + suffix;
+    let result = formatter.format(value) + suffix;
+    if ("NaN" + suffix === result) {
+        result = "<span class='red-text'>Nombre attendu</span>";
+    }
+
+    return result;
 };
 
 export default {

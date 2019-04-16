@@ -47,6 +47,8 @@ export default class Http {
                 }
             })
             .catch((error: any) => {
+                console.log(error);
+
                 if (typeof errorFunction === "function") {
                     errorFunction(error);
                 } else {

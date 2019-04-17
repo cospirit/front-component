@@ -376,6 +376,8 @@ var Control = {
 
     if (typeof popupFormat === 'function') {
       popupLabel = popupFormat({ query: query, result: result });
+      const latlng = marker.getLatLng();
+      popupLabel += "<br><br>Latitude (Y) : " + latlng.lat + "<br>Longitude (X) : " + latlng.lng;
     }
 
     marker.bindPopup(popupLabel);

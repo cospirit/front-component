@@ -1,5 +1,5 @@
 import Vuex from "vuex";
-import Router from "vue-router";
+import Router, { Route } from "vue-router";
 import Http, {Data} from "cospirit-front-component/Http";
 import M from "materialize-css";
 import { decode } from "jwt-simple";
@@ -81,7 +81,7 @@ export default {
                     if (accesToken) {
                         // Test valid access_token
                         try {
-                            const token = decode(accesToken, null, true);
+                            const token = decode(accesToken, "", true);
                             if (token.exp <= (new Date()).getTime() / 1000) {
                                 localStorage.setItem("access_token", "");
                             } else {

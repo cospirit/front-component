@@ -13,8 +13,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
-import L, { LatLngBoundsExpression, Layer, LayerGroup, Control, Map, LeafletMouseEvent } from "leaflet";
-import { LMarker, LMap as LeafleatMap  }  from "vue2-leaflet";
+import L, { LatLngBoundsExpression, Layer, LayerGroup, Control, Map as LeafleatMap, LeafletMouseEvent } from "leaflet";
 import { GeoSearchControl, OpenStreetMapProvider } from "../leaflet-geosearch/lib/index.js";
 import Pin from "../Pin"
 import "leaflet-fullscreen";
@@ -23,22 +22,12 @@ import "../streetview/streetview";
 import "../streetview/streetview.css";
 import _ from "lodash";
 
-interface IControl {
-    layer: string;
-    name: string;
-    overlay: boolean | null;
-}
 
 interface MarkerList {
     name: string;
-    markers: ExtendedMarker[];
+    markers: Layer[];
     layerId: string;
     type: string;
-}
-
-export interface ExtendedLayer extends Layer {
-    _url: string;
-    layerName: string;
 }
 
 export interface Event {
@@ -46,19 +35,27 @@ export interface Event {
     eventAction: any;
 }
 
-export interface ExtendedMarker extends LMarker {
-    layerId: string;
-}
-
-export interface ExtendedLayerGroup extends LayerGroup {
-    layerName: string;
-}
-
 export interface EventClick {
     dispatchClick(ev: LeafletMouseEvent): void
 }
 
+export interface SidebarControl {
+    action: string;
+    id: string;
+}
+
+export interface Sidebar extends L.Control {
+    enablePanel(id: string): void;
+    open(id: string): void;
+    disablePanel(id: string): void;
+    close(id: string): void;
+}
+
 export interface Options {
+    streetview?: {
+        active: boolean;
+        options?: object;
+    }
     sidebar?: {
         active: boolean;
         options?: object;
@@ -93,10 +90,13 @@ export interface Options {
 
 @Component({ })
 export default class Map extends Vue {
-    private layerControl: Control.Layers;
+    static SIDEBAR_OPEN = "open";
+    static SIDEBAR_CLOSE = "close";
+
+    private layerControl: L.Control.Layers;
     private eventclicks: EventClick[] = [];
-    private map: Map;
-    private sidebar?: L.control;
+    private map: LeafleatMap;
+    private sidebar?: Sidebar;
 
     @Prop({ default: "500px" }) public width!: string;
     @Prop({ default: "500px" }) public height!: string;
@@ -105,12 +105,12 @@ export default class Map extends Vue {
     @Prop({ default: null }) public bounds!: LatLngBoundsExpression & string[];
     @Prop({ default: [] }) public markers!: MarkerList[];
     @Prop({ default: [] }) public mapEvents!: Event[];
-    @Prop({ default: null }) public controls!: Control[];
+    @Prop({ default: null }) public controls!: Layer[];
     @Prop({ default: () => { return [] } }) public mapControls: Control[];
     @Prop() public resize: number;
     @Prop({ default: "map" }) public idMap: string;
     @Prop({ }) public options: Options;
-    @Prop({ default: null }) public sidebarControl!: object;
+    @Prop({ default: null }) public sidebarControl!: SidebarControl;
 
     public mounted(): void {
         this.map = L.map(this.idMap).setView(
@@ -131,18 +131,11 @@ export default class Map extends Vue {
         ).addTo(this.map);
 
         this.layerControl = L.control.layers({ "Satelite": satellite, "Plan": plan }).addTo(this.map);
-        this.controls.forEach((control: Control) => {
-            this.layerControl.addBaseLayer(control, control.name)
+        this.controls.forEach((control: Layer) => {
+            this.layerControl.addBaseLayer(control, _.get(control, "name", ""))
         });
 
-        var pegmanControl = new L.Control.Pegman({
-            position: 'bottomright',
-            clickableStreetViewLayer: false, // WARNING: when enabled it will violate Google ToS rules
-            theme: "leaflet-pegman",
-        });
-        pegmanControl.addTo(this.map);
-
-        this.map.addControl(new L.control.fullscreen());
+        this.map.addControl(_.invoke(L.control, "fullscreen"));
 
         this.mapControls.forEach((control: Control) => {
             control.addTo(this.map);
@@ -155,7 +148,7 @@ export default class Map extends Vue {
         this.map.invalidateSize();
     }
 
-    @Watch("markers") public onMarkersChange(newValue, oldValue) {
+    @Watch("markers") public onMarkersChange(newValue: MarkerList[], oldValue: MarkerList[]) {
 
         // Remove layer not used
         _.forEach(oldValue, (oldLayer: MarkerList) => {
@@ -164,14 +157,15 @@ export default class Map extends Vue {
             });
 
             if (!find) {
-                this.map.eachLayer((layer: ExtendedLayer): void => {
-                    if (layer.layerName === oldLayer.name) {
+                this.map.eachLayer((layer: Layer): void => {
+                    if (_.get(layer, "layerName", "")=== oldLayer.name) {
                         this.map.removeLayer(layer);
                     }
                 });
 
-                _.remove(this.layerControl._layers, (layerControl: IControl) => {
-                    return layerControl.name === oldLayer.name;
+                const controls: Layer[] = _.get(this.layerControl, "_layers", []);
+                _.remove(controls, (layerControl: Layer) => {
+                    return _.get(layerControl, "name", "") === oldLayer.name;
                 });
             }
         });
@@ -183,14 +177,15 @@ export default class Map extends Vue {
             });
 
             if (find) {
-                this.map.eachLayer((layer: ExtendedLayer): void => {
-                    if (layer.layerName === newLayer.name) {
+                this.map.eachLayer((layer: Layer): void => {
+                    if (_.get(layer, "layerName", "") === newLayer.name) {
                         this.map.removeLayer(layer);
                     }
                 });
 
-                _.remove(this.layerControl._layers, (layerControl: IControl) => {
-                    return layerControl.name === newLayer.name;
+                const controls: Layer[] = _.get(this.layerControl, "_layers", []);
+                _.remove(controls, (layerControl: Layer) => {
+                    return _.get(layerControl, "name", "") === newLayer.name;
                 });
             }
 
@@ -209,20 +204,18 @@ export default class Map extends Vue {
         });
     }
 
-    @Watch("mapControls") public onControlsChange() {
+    @Watch("mapControls") public onMapControlsChange() {
         this.mapControls.forEach((control: Control) => {
             control.addTo(this.map);
         });
     }
 
     @Watch("controls") public onControlsChange() {
-        this.controls.forEach((control: Control) => {
-            if (this.layerControl._layers) {
-                _.remove(this.layerControl._layers, (layerControl: IControl) => {
-                    return layerControl.name === control.name;
-                });
-            }
-            this.layerControl.addBaseLayer(control, control.name)
+        this.controls.forEach((control: Layer) => {
+            _.remove(_.get(this.layerControl, "_layers", []), (layerControl: Layer) => {
+                return _.get(layerControl, "name","") === _.get(control, "name", null);
+            });
+            this.layerControl.addBaseLayer(control, _.get(control, "name", ""));
         });
     }
 
@@ -241,15 +234,26 @@ export default class Map extends Vue {
     }
 
     private addMarkerToLayer(markerList: MarkerList): void {
-        const layer: ExtendedLayerGroup  = L.layerGroup(markerList.markers);
+        const layer: LayerGroup  = L.layerGroup(markerList.markers);
 
-        layer.layerName = markerList.name;
+        _.set(layer, "layerName", markerList.name);
         layer.addTo(this.map);
         this.layerControl.addOverlay(layer, markerList.name);
     }
 
     private loadOptions() {
         if (this.options) {
+            if (this.options.streetview && true === this.options.streetview.active) {
+                new L.Control.Pegman(
+                    this.options.streetview.options
+                    || {
+                        position: 'bottomright',
+                        clickableStreetViewLayer: false, // WARNING: when enabled it will violate Google ToS rules
+                        theme: "leaflet-pegman",
+                    }
+                ).addTo(this.map);
+            }
+
             if (this.options.sidebar && true === this.options.sidebar.active) {
                 this.sidebar = L.control.sidebar(
                     this.options.sidebar.options

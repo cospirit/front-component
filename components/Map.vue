@@ -221,12 +221,12 @@ export default class Map extends Vue {
 
     @Watch("sidebarControl") public onChangeSidebarControl() {
         if (this.sidebar) {
-            if (this.sidebarControl.action === "OPEN") {
+            if (this.sidebarControl.action === Map.SIDEBAR_OPEN) {
                 this.sidebar.enablePanel(this.sidebarControl.id);
                 this.sidebar.open(this.sidebarControl.id);
             }
 
-            if (this.sidebarControl.action === "CLOSE") {
+            if (this.sidebarControl.action === Map.SIDEBAR_CLOSE) {
                 this.sidebar.close(this.sidebarControl.id);
                 this.sidebar.disablePanel(this.sidebarControl.id);
             }

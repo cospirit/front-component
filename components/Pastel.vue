@@ -15,7 +15,7 @@
         >
             &nbsp;
         </span>
-        <br v-if="content">{{ content }}
+        <span v-if="content">{{ content }}</span>
     </div>
 </template>
 

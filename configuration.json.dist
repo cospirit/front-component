@@ -1,0 +1,6 @@
+{
+    "debug": false,
+    "env": "prod",
+    "apiUri": "http://api.cospirit.intranet",
+    "ssoUri": "https://sso.cospirit.com/adfs/oauth2/authorize?client_id=INJECT-HERE-CLIENT-ID&response_type=code&response_mode=query&scope=openid&redirect_uri="
+}

@@ -1,6 +1,6 @@
-import Vuex from "vuex";
 import Router, { Route } from "vue-router";
 import Http, {Data} from "cospirit-front-component/Http";
+import Configuration from "cospirit-front-component/Configuration";
 import M from "materialize-css";
 import { decode } from "jwt-simple";
 
@@ -96,10 +96,10 @@ export default {
                     if (!validToken) {
                         localStorage.setItem("lastRoute",  to.path + to.hash);
 
-                        // Go to SSO
-                        location.href = process.env.VUE_APP_URI_SSO +
+                        location.href = Configuration.get("ssoUri") +
                             location.origin +
                             router.resolve({ name: "token" }).href;
+
                         return;
                     }
 

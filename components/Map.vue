@@ -41,7 +41,7 @@ export interface EventClick {
 
 export interface SidebarControl {
     action: string;
-    id: string;
+    id: string | string[];
 }
 
 export interface Sidebar extends L.Control {
@@ -100,6 +100,8 @@ export interface Options {
 export default class Map extends Vue {
     static SIDEBAR_OPEN = "open";
     static SIDEBAR_CLOSE = "close";
+    static SIDEBAR_DISABLE = "disable";
+    static SIDEBAR_ENABLE = "enable";
 
     private layerControl: L.Control.Layers;
     private eventclicks: EventClick[] = [];
@@ -227,15 +229,27 @@ export default class Map extends Vue {
 
     @Watch("sidebarControl") public onChangeSidebarControl() {
         if (this.sidebar) {
-            if (this.sidebarControl.action === Map.SIDEBAR_OPEN) {
-                this.sidebar.enablePanel(this.sidebarControl.id);
-                this.sidebar.open(this.sidebarControl.id);
+            if (!Array.isArray(this.sidebarControl.id)) {
+                this.sidebarControl.id = [this.sidebarControl.id];
             }
 
-            if (this.sidebarControl.action === Map.SIDEBAR_CLOSE) {
-                this.sidebar.close(this.sidebarControl.id);
-                this.sidebar.disablePanel(this.sidebarControl.id);
-            }
+            _.forEach(this.sidebarControl.id, (id, key) => {
+                if (this.sidebarControl.action === Map.SIDEBAR_OPEN) {
+                    this.sidebar.enablePanel(id);
+                    this.sidebar.open(id);
+                }
+                if (this.sidebarControl.action === Map.SIDEBAR_CLOSE) {
+                    this.sidebar.close(id);
+                    this.sidebar.disablePanel(id);
+                }
+                if (this.sidebarControl.action === Map.SIDEBAR_DISABLE) {
+                    this.sidebar.close(id);
+                    this.sidebar.disablePanel(id);
+                }
+                if (this.sidebarControl.action === Map.SIDEBAR_ENABLE) {
+                    this.sidebar.enablePanel(id);
+                }
+            });
         }
     }
 

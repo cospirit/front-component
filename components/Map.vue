@@ -84,6 +84,14 @@ export interface Options {
         active: boolean;
         options?: object;
     };
+    fullscreen?: {
+        active: boolean;
+        options?: object;
+    };
+    zoomControl?: {
+        active: boolean;
+        options?: object;
+    };
 
     eventClick?: EventClick[];
 }
@@ -113,7 +121,7 @@ export default class Map extends Vue {
     @Prop({ default: null }) public sidebarControl!: SidebarControl;
 
     public mounted(): void {
-        this.map = L.map(this.idMap).setView(
+        this.map = L.map(this.idMap, { zoomControl: false }).setView(
             [ 45.749095 , 4.82665 ],
             this.zoom,
         );
@@ -134,8 +142,6 @@ export default class Map extends Vue {
         this.controls.forEach((control: Layer) => {
             this.layerControl.addBaseLayer(control, _.get(control, "name", ""))
         });
-
-        this.map.addControl(_.invoke(L.control, "fullscreen"));
 
         this.mapControls.forEach((control: Control) => {
             control.addTo(this.map);
@@ -254,6 +260,14 @@ export default class Map extends Vue {
                 ).addTo(this.map);
             }
 
+            if (this.options.zoomControl && true === this.options.zoomControl.active) {
+                L.control.zoom(
+                    this.options.zoomControl.options
+                    || {
+                        position: "bottomright",
+                    }).addTo(this.map);
+            }
+
             if (this.options.sidebar && true === this.options.sidebar.active) {
                 this.sidebar = L.control.sidebar(
                     this.options.sidebar.options
@@ -313,6 +327,7 @@ export default class Map extends Vue {
                     || {
                         provider,
                         searchLabel: this.options.address.name,
+                        position: 'bottomright',
                     }
                 ).addTo(this.map);
             }
@@ -337,6 +352,13 @@ export default class Map extends Vue {
                         }
                     }
                 ).addTo(this.map);
+            }
+
+
+            if (this.options.fullscreen && true === this.options.fullscreen.active) {
+                this.map.addControl(_.invoke(L.control, "fullscreen", {
+                    position: 'bottomright'
+                }));
             }
 
             if (this.options.eventClick) {

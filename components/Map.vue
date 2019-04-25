@@ -41,7 +41,7 @@ export interface EventClick {
 
 export interface SidebarControl {
     action: string;
-    id: string;
+    id: string | string[];
 }
 
 export interface Sidebar extends L.Control {
@@ -84,6 +84,14 @@ export interface Options {
         active: boolean;
         options?: object;
     };
+    fullscreen?: {
+        active: boolean;
+        options?: object;
+    };
+    zoomControl?: {
+        active: boolean;
+        options?: object;
+    };
 
     eventClick?: EventClick[];
 }
@@ -92,6 +100,8 @@ export interface Options {
 export default class Map extends Vue {
     static SIDEBAR_OPEN = "open";
     static SIDEBAR_CLOSE = "close";
+    static SIDEBAR_DISABLE = "disable";
+    static SIDEBAR_ENABLE = "enable";
 
     private layerControl: L.Control.Layers;
     private eventclicks: EventClick[] = [];
@@ -113,7 +123,7 @@ export default class Map extends Vue {
     @Prop({ default: null }) public sidebarControl!: SidebarControl;
 
     public mounted(): void {
-        this.map = L.map(this.idMap).setView(
+        this.map = L.map(this.idMap, { zoomControl: false }).setView(
             [ 45.749095 , 4.82665 ],
             this.zoom,
         );
@@ -134,8 +144,6 @@ export default class Map extends Vue {
         this.controls.forEach((control: Layer) => {
             this.layerControl.addBaseLayer(control, _.get(control, "name", ""))
         });
-
-        this.map.addControl(_.invoke(L.control, "fullscreen"));
 
         this.mapControls.forEach((control: Control) => {
             control.addTo(this.map);
@@ -221,15 +229,27 @@ export default class Map extends Vue {
 
     @Watch("sidebarControl") public onChangeSidebarControl() {
         if (this.sidebar) {
-            if (this.sidebarControl.action === Map.SIDEBAR_OPEN) {
-                this.sidebar.enablePanel(this.sidebarControl.id);
-                this.sidebar.open(this.sidebarControl.id);
+            if (!Array.isArray(this.sidebarControl.id)) {
+                this.sidebarControl.id = [this.sidebarControl.id];
             }
 
-            if (this.sidebarControl.action === Map.SIDEBAR_CLOSE) {
-                this.sidebar.close(this.sidebarControl.id);
-                this.sidebar.disablePanel(this.sidebarControl.id);
-            }
+            _.forEach(this.sidebarControl.id, (id, key) => {
+                if (this.sidebarControl.action === Map.SIDEBAR_OPEN) {
+                    this.sidebar.enablePanel(id);
+                    this.sidebar.open(id);
+                }
+                if (this.sidebarControl.action === Map.SIDEBAR_CLOSE) {
+                    this.sidebar.close(id);
+                    this.sidebar.disablePanel(id);
+                }
+                if (this.sidebarControl.action === Map.SIDEBAR_DISABLE) {
+                    this.sidebar.close(id);
+                    this.sidebar.disablePanel(id);
+                }
+                if (this.sidebarControl.action === Map.SIDEBAR_ENABLE) {
+                    this.sidebar.enablePanel(id);
+                }
+            });
         }
     }
 
@@ -252,6 +272,14 @@ export default class Map extends Vue {
                         theme: "leaflet-pegman",
                     }
                 ).addTo(this.map);
+            }
+
+            if (this.options.zoomControl && true === this.options.zoomControl.active) {
+                L.control.zoom(
+                    this.options.zoomControl.options
+                    || {
+                        position: "bottomright",
+                    }).addTo(this.map);
             }
 
             if (this.options.sidebar && true === this.options.sidebar.active) {
@@ -313,6 +341,7 @@ export default class Map extends Vue {
                     || {
                         provider,
                         searchLabel: this.options.address.name,
+                        position: 'bottomright',
                     }
                 ).addTo(this.map);
             }
@@ -337,6 +366,13 @@ export default class Map extends Vue {
                         }
                     }
                 ).addTo(this.map);
+            }
+
+
+            if (this.options.fullscreen && true === this.options.fullscreen.active) {
+                this.map.addControl(_.invoke(L.control, "fullscreen", {
+                    position: 'bottomright'
+                }));
             }
 
             if (this.options.eventClick) {

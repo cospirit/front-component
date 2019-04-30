@@ -106,7 +106,8 @@ export default class Map extends Vue {
     private layerControl: L.Control.Layers;
     private eventclicks: EventClick[] = [];
     private map: LeafleatMap;
-    private sidebar?: Sidebar;
+    private sidebar: Sidebar | null = null;
+    private drawer: L.Control.Draw | null = null;
 
     @Prop({ default: "500px" }) public width!: string;
     @Prop({ default: "500px" }) public height!: string;
@@ -121,6 +122,7 @@ export default class Map extends Vue {
     @Prop({ default: "map" }) public idMap: string;
     @Prop({ }) public options: Options;
     @Prop({ default: null }) public sidebarControl!: SidebarControl;
+    @Prop({ default: true }) public drawerControl: boolean;
 
     public mounted(): void {
         this.map = L.map(this.idMap, { zoomControl: false }).setView(
@@ -228,28 +230,36 @@ export default class Map extends Vue {
     }
 
     @Watch("sidebarControl") public onChangeSidebarControl() {
-        if (this.sidebar) {
-            if (!Array.isArray(this.sidebarControl.id)) {
-                this.sidebarControl.id = [this.sidebarControl.id];
-            }
+        if (!Array.isArray(this.sidebarControl.id)) {
+            this.sidebarControl.id = [this.sidebarControl.id];
+        }
 
-            _.forEach(this.sidebarControl.id, (id, key) => {
-                if (this.sidebarControl.action === Map.SIDEBAR_OPEN) {
-                    this.sidebar.enablePanel(id);
-                    this.sidebar.open(id);
-                }
-                if (this.sidebarControl.action === Map.SIDEBAR_CLOSE) {
-                    this.sidebar.close(id);
-                    this.sidebar.disablePanel(id);
-                }
-                if (this.sidebarControl.action === Map.SIDEBAR_DISABLE) {
-                    this.sidebar.close(id);
-                    this.sidebar.disablePanel(id);
-                }
-                if (this.sidebarControl.action === Map.SIDEBAR_ENABLE) {
-                    this.sidebar.enablePanel(id);
-                }
-            });
+        _.forEach(this.sidebarControl.id, (id, key) => {
+            if (this.sidebar && this.sidebarControl.action === Map.SIDEBAR_OPEN) {
+                this.sidebar.enablePanel(id);
+                this.sidebar.open(id);
+            }
+            if (this.sidebar && this.sidebarControl.action === Map.SIDEBAR_CLOSE) {
+                this.sidebar.close(id);
+                this.sidebar.disablePanel(id);
+            }
+            if (this.sidebar && this.sidebarControl.action === Map.SIDEBAR_DISABLE) {
+                this.sidebar.close(id);
+                this.sidebar.disablePanel(id);
+            }
+            if (this.sidebar && this.sidebarControl.action === Map.SIDEBAR_ENABLE) {
+                this.sidebar.enablePanel(id);
+            }
+        });
+    }
+
+    @Watch("drawerControl") public onChangeDrawerControl(enable: boolean) {
+        if (this.drawer) {
+            if (enable) {
+                this.drawer.addTo(this.map);
+            } else {
+                this.drawer.remove();
+            }
         }
     }
 
@@ -348,10 +358,10 @@ export default class Map extends Vue {
 
             if (this.options.draw && true === this.options.draw.active) {
                 // Set the title to show on the polygon button
-                new L.Control.Draw(
+                this.drawer = new L.Control.Draw(
                     this.options.draw.options
                     || {
-                        position: 'topright',
+                        position: 'topleft',
                         draw: {
                             polyline: false,
                             polygon: {
@@ -365,7 +375,8 @@ export default class Map extends Vue {
                             marker: { icon: Pin.getCustomMarkerSvgCode("#00bbff", 24, 24) },
                         }
                     }
-                ).addTo(this.map);
+                );
+                this.drawer.addTo(this.map);
             }
 
 

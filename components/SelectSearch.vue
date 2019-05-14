@@ -18,6 +18,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
 import _ from "lodash";
+import EventBus from "cospirit-front-component/EventBus";
 
 @Component({})
 export default class SelectSearch extends Vue {
@@ -33,7 +34,7 @@ export default class SelectSearch extends Vue {
     }
 
     @Watch("filter") public onFilterChange(value: string): void {
-        this.$emit("update-filter", _.set({}, this.filterName, value));
+        EventBus.$emit("update-filter", _.set({}, this.filterName, value));
     }
 }
 </script>

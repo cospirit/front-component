@@ -253,13 +253,19 @@ export default class Map extends Vue {
         });
     }
 
-    @Watch("drawerControl") public onChangeDrawerControl(enable: boolean) {
+    @Watch("drawerControl") public onChangeDrawerControl() {
         if (this.drawer) {
-            if (enable) {
-                this.drawer.addTo(this.map);
-            } else {
-                this.drawer.remove();
-            }
+            this.drawer.remove();
+        }
+
+        if (this.drawerControl.options) {
+            this.drawer = new L.Control.Draw(
+                {
+                    position: 'topleft',
+                    draw: this.drawerControl.options
+                }
+            );
+            this.drawer.addTo(this.map);
         }
     }
 
@@ -355,30 +361,6 @@ export default class Map extends Vue {
                     }
                 ).addTo(this.map);
             }
-
-            if (this.options.draw && true === this.options.draw.active) {
-                // Set the title to show on the polygon button
-                this.drawer = new L.Control.Draw(
-                    this.options.draw.options
-                    || {
-                        position: 'topleft',
-                        draw: {
-                            polyline: false,
-                            polygon: {
-                                metric: true,
-                                icon: new L.DivIcon({
-                                    className: 'leaflet-div-icon leaflet-editing-icon',
-                                    iconSize: new L.Point(8, 8)
-                                }),
-                            },
-                            circlemarker: false,
-                            marker: { icon: Pin.getCustomMarkerSvgCode("#00bbff", 24, 24) },
-                        }
-                    }
-                );
-                this.drawer.addTo(this.map);
-            }
-
 
             if (this.options.fullscreen && true === this.options.fullscreen.active) {
                 this.map.addControl(_.invoke(L.control, "fullscreen", {

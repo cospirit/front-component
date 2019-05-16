@@ -99,32 +99,20 @@ export default {
             return html;
         },
     },
+    mutations: {
+        setCompetitorsGroup: (state: any, competitorsGroup: any[]) => {
+            state.competitorsGroup = competitorsGroup;
+        },
+        setCompetitorsType: (state: any, competitorsType: any[]) => {
+            state.competitorsType = competitorsType;
+        },
+    },
     getters: {
-        loadCompetitors: (state: any) => {
-            return () => {
-                Http.search(
-                    "/search/competitortype",
-                    { fields: ["parent.code", "name", "code", "uuid", "competitorGroups.uuid"] },
-                    (data: Data) => {
-                        state.competitorsType = data.data;
-                    },
-                    (error: Data) => {
-                        state.competitorsType = null;
-                        M.toast({ html: error.message, classes: "red" });
-                    },
-                );
-                Http.search(
-                    "/search/competitorgroup",
-                    { fields: ["uuid", "name", "logoBase64"] },
-                    (data: Data) => {
-                        state.competitorsGroup = data.data;
-                    },
-                    (error: Data) => {
-                        state.competitorsGroup = null;
-                        M.toast({ html: error.message, classes: "red" });
-                    },
-                );
-            };
+        competitorsGroup: (state: any) => {
+            return state.competitorsGroup;
+        },
+        competitorsType: (state: any) => {
+            return state.competitorsType;
         },
         competitorMarkers: (state: any) => {
             return (
@@ -192,4 +180,30 @@ export default {
             };
         },
     },
+    actions: {
+        loadCompetitors: ({ commit }) => {
+            Http.search(
+                "/search/competitortype",
+                { fields: [ "parent.code", "name", "code", "uuid", "competitorGroups.uuid" ] },
+                (data: Data) => {
+                    commit('setCompetitorsType', data.data);
+                },
+                (error: Data) => {
+                    commit('setCompetitorsType', null);
+                    M.toast({ html: error.message, classes: "red" });
+                },
+            );
+            Http.search(
+                "/search/competitorgroup",
+                { fields: [ "uuid", "name", "logoBase64" ] },
+                (data: Data) => {
+                    commit('setCompetitorsGroup', data.data);
+                },
+                (error: Data) => {
+                    commit('setCompetitorsGroup', null);
+                    M.toast({ html: error.message, classes: "red" });
+                },
+            );
+        }
+    }
 };

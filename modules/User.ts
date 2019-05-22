@@ -61,6 +61,21 @@ export default {
         },
     },
     getters: {
+        isAdv: (state: any) => {
+            if (state.currentUser.department.name === "ADV") {
+                return true;
+            }
+            return false;
+        },
+        isDsi: (state: any) => {
+            if (state.currentUser.department.name === "DSI") {
+                return true;
+            }
+            return false;
+        },
+        getUserDepartment: (state: any) => {
+            return state.currentUser.department.name;
+        },
         loadUserUsingSSO: (state: any) => {
 
             return (router: Router, afterLoad: any) => {

@@ -21,7 +21,7 @@ import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
 import "../streetview/streetview";
 import "../streetview/streetview.css";
 import _ from "lodash";
-
+import EventBus from "cospirit-front-component/EventBus";
 
 interface MarkerList {
     name: string;
@@ -152,6 +152,8 @@ export default class Map extends Vue {
         });
 
         this.loadOptions();
+
+        EventBus.$on("add-map-event", this.addMapEvent);
     }
 
     @Watch("resize") public resizeMap() {
@@ -267,6 +269,12 @@ export default class Map extends Vue {
             );
             this.drawer.addTo(this.map);
         }
+    }
+
+    public addMapEvent(events: Event[]) {
+        events.forEach((event: Event) => {
+            this.map.on(event.eventType, event.eventAction);
+        });
     }
 
     private addMarkerToLayer(markerList: MarkerList): void {

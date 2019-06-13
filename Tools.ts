@@ -1,4 +1,5 @@
 import { LatLng } from "leaflet";
+import moment from "moment";
 
 export default class Tools {
     static generateUuid(mask: string = "xxxxxxxx"): string {
@@ -44,5 +45,11 @@ export default class Tools {
         });
 
         return [polygon];
+    }
+
+    static weeksCount(beginDate: string, endDate: string): number {
+        const mBeginDate = moment(beginDate, "DD-MM-YYYY");
+        const mEndDate = moment(endDate, "DD-MM-YYYY");
+        return Math.ceil(mEndDate.diff(mBeginDate, "day") / 7);
     }
 }

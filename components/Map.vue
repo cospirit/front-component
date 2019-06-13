@@ -23,7 +23,7 @@ import "../streetview/streetview.css";
 import _ from "lodash";
 import EventBus from "cospirit-front-component/EventBus";
 
-interface MarkerList {
+export interface MarkerList {
     name: string;
     markers: Layer[];
     layerId: string;

@@ -8,14 +8,15 @@ export interface Data {
     data: any;
 }
 
-const getHeaders = () => {
-    return {
-        "X-Requested-With": "XMLHttpRequest",
-        "Authorization" : "Bearer " + localStorage.getItem("access_token"),
-    };
-};
-
 export default class Http {
+
+    public static getHeaders(): object {
+        return {
+            "X-Requested-With": "XMLHttpRequest",
+            "Authorization" : "Bearer " + localStorage.getItem("access_token"),
+        };
+    }
+
     public static search(link: string, params: object, successFunction: any, errorFunction?: any): void {
         Http.call("post", link, params, successFunction, errorFunction);
     }
@@ -35,7 +36,7 @@ export default class Http {
     private static call(method: string, link: string, data: object, successFunction: any, errorFunction: any): void {
         $http
             .request(Configuration.get("apiUri") + link, {
-                headers: getHeaders(),
+                headers: Http.getHeaders(),
                 method,
                 data,
             })

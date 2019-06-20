@@ -108,10 +108,10 @@ export default class Map extends Vue {
     private map: LeafleatMap;
     private sidebar: Sidebar | null = null;
     private drawer: L.Control.Draw | null = null;
+    public cursor: string = "default";
 
     @Prop({ default: "500px" }) public width!: string;
     @Prop({ default: "500px" }) public height!: string;
-    @Prop({ default: "default" }) public cursor!: string;
     @Prop({ default: 10 }) public zoom!: number;
     @Prop({ default: null }) public bounds!: LatLngBoundsExpression & string[];
     @Prop({ default: [] }) public markers!: MarkerList[];
@@ -154,6 +154,10 @@ export default class Map extends Vue {
         this.loadOptions();
 
         EventBus.$on("add-map-event", this.addMapEvent);
+        EventBus.$on("change-map-cursor", (cursor: string) => {
+            this.cursor = cursor;
+        });
+        EventBus.$on("change-map-sidebar", this.onChangeSidebarControl);
     }
 
     @Watch("resize") public resizeMap() {
@@ -231,25 +235,25 @@ export default class Map extends Vue {
         });
     }
 
-    @Watch("sidebarControl") public onChangeSidebarControl() {
-        if (!Array.isArray(this.sidebarControl.id)) {
-            this.sidebarControl.id = [this.sidebarControl.id];
+    public onChangeSidebarControl(sidebarControl: SidebarControl): void {
+        if (!Array.isArray(sidebarControl.id)) {
+            sidebarControl.id = [sidebarControl.id];
         }
 
-        _.forEach(this.sidebarControl.id, (id, key) => {
-            if (this.sidebar && this.sidebarControl.action === Map.SIDEBAR_OPEN) {
+        _.forEach(sidebarControl.id, (id, key) => {
+            if (this.sidebar && sidebarControl.action === Map.SIDEBAR_OPEN) {
                 this.sidebar.enablePanel(id);
                 this.sidebar.open(id);
             }
-            if (this.sidebar && this.sidebarControl.action === Map.SIDEBAR_CLOSE) {
+            if (this.sidebar && sidebarControl.action === Map.SIDEBAR_CLOSE) {
                 this.sidebar.close(id);
                 this.sidebar.disablePanel(id);
             }
-            if (this.sidebar && this.sidebarControl.action === Map.SIDEBAR_DISABLE) {
+            if (this.sidebar && sidebarControl.action === Map.SIDEBAR_DISABLE) {
                 this.sidebar.close(id);
                 this.sidebar.disablePanel(id);
             }
-            if (this.sidebar && this.sidebarControl.action === Map.SIDEBAR_ENABLE) {
+            if (this.sidebar && sidebarControl.action === Map.SIDEBAR_ENABLE) {
                 this.sidebar.enablePanel(id);
             }
         });

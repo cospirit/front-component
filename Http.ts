@@ -2,6 +2,7 @@ import $http from "axios";
 import _ from "lodash";
 import M from "materialize-css";
 import Configuration from "cospirit-front-component/Configuration";
+import Loading from "cospirit-front-component/modules/Loading";
 
 export interface Data {
     message: string;
@@ -34,6 +35,7 @@ export default class Http {
     }
 
     private static call(method: string, link: string, data: object, successFunction: any, errorFunction: any): void {
+        Loading.mutations.increase(Loading.state);
         $http
             .request(Configuration.get("apiUri") + link, {
                 headers: Http.getHeaders(),
@@ -41,6 +43,7 @@ export default class Http {
                 data,
             })
             .then((response: any) => {
+                Loading.mutations.decrease(Loading.state);
                 if (successFunction) {
                     successFunction(response.data);
                 } else {
@@ -52,6 +55,7 @@ export default class Http {
             })
             .catch((error: any) => {
                 console.log(error);
+                Loading.mutations.decrease(Loading.state);
 
                 if (typeof errorFunction === "function") {
                     errorFunction(error);

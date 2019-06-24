@@ -19,22 +19,23 @@ export default class Http {
     }
 
     public static search(link: string, params: object, successFunction: any, errorFunction?: any): void {
-        Http.call("post", link, params, successFunction, errorFunction);
+        (new Http).call("post", link, params, successFunction, errorFunction);
     }
 
     public static create(link: string, params: object, successFunction: any, errorFunction?: any): void {
-        Http.call("post", link, params, successFunction, errorFunction);
+        (new Http).call("post", link, params, successFunction, errorFunction);
     }
 
     public static save(link: string, params: object, successFunction: any, errorFunction?: any): void {
-        Http.call("patch", link, params, successFunction, errorFunction);
+        (new Http).call("patch", link, params, successFunction, errorFunction);
     }
 
     public static delete(link: string, params: object, successFunction: any, errorFunction?: any): void {
-        Http.call("delete", link, params, successFunction, errorFunction);
+        (new Http).call("delete", link, params, successFunction, errorFunction);
     }
 
-    private static call(method: string, link: string, data: object, successFunction: any, errorFunction: any): void {
+    private call(method: string, link: string, data: object, successFunction: any, errorFunction: any): void {
+        const currentTimestamp = Date.now();
         Loading.mutations.increase(Loading.state);
         $http
             .request(Configuration.get("apiUri") + link, {
@@ -44,39 +45,43 @@ export default class Http {
             })
             .then((response: any) => {
                 Loading.mutations.decrease(Loading.state);
-                if (successFunction) {
-                    successFunction(response.data);
-                } else {
-                    M.toast({
-                        html: "Operation successfully completed.",
-                        classes: "green",
-                    });
+                if(Configuration.get("lastValidTimestamp") <= currentTimestamp) {
+                    if (successFunction) {
+                        successFunction(response.data);
+                    } else {
+                        M.toast({
+                            html: "Operation successfully completed.",
+                            classes: "green",
+                        });
+                    }
                 }
             })
             .catch((error: any) => {
-                console.log(error);
                 Loading.mutations.decrease(Loading.state);
+                if(Configuration.get("lastValidTimestamp") <= currentTimestamp) {
+                    console.log(error);
 
-                if (typeof errorFunction === "function") {
-                    errorFunction(error);
-                } else {
-                    if (typeof errorFunction !== "string") {
-                        errorFunction = "The operation was not able to be made, please warn the IT team.";
-                    }
+                    if (typeof errorFunction === "function") {
+                        errorFunction(error);
+                    } else {
+                        if (typeof errorFunction !== "string") {
+                            errorFunction = "The operation was not able to be made, please warn the IT team.";
+                        }
 
-                    if (error.response) {
-                        _.forEach(error.response.data.status.messages, (messages: string[], fieldName: string) => {
-                            errorFunction += fieldName + " : ";
-                            messages.forEach((message) => {
-                                errorFunction += message + "<br>";
+                        if (error.response) {
+                            _.forEach(error.response.data.status.messages, (messages: string[], fieldName: string) => {
+                                errorFunction += fieldName + " : ";
+                                messages.forEach((message) => {
+                                    errorFunction += message + "<br>";
+                                });
                             });
+                        }
+
+                        M.toast({
+                            html: errorFunction,
+                            classes: "red",
                         });
                     }
-
-                    M.toast({
-                        html: errorFunction,
-                        classes: "red",
-                    });
                 }
             })
         ;

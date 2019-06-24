@@ -1,5 +1,6 @@
 import axios from 'axios';
 import _ from "lodash";
+import EventBus from "./EventBus";
 
 class Configuration {
     private configuration = {
@@ -7,7 +8,14 @@ class Configuration {
         env: "prod",
         apiUri: "",
         ssoUri: "",
+        lastValidTimestamp: 0,
     };
+
+    constructor() {
+        EventBus.$on("unvalid-old-actions", () => {
+            this.configuration.lastValidTimestamp =  Date.now();
+        });
+    }
 
     /**
      * Load configuration using Promise

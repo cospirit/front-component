@@ -1,6 +1,7 @@
 import moment from "moment";
 
-const formatNumber = (value: any, precision: number, suffix: string = "") => {
+const formatNumber = (value: any, precision: number, suffix: string = "",showError: boolean = true) => {
+    const originalValue = value;
     if (typeof value === "string" && value.length > 0) {
         value = parseFloat(value);
     }
@@ -18,6 +19,9 @@ const formatNumber = (value: any, precision: number, suffix: string = "") => {
     let result = formatter.format(value) + suffix;
     if ("NaN" + suffix === result) {
         result = "<span class='red-text'>Nombre attendu</span>";
+    }
+    if ("NaN" + suffix === result && !showError) {
+        return originalValue;
     }
 
     return result;
@@ -46,7 +50,7 @@ export default {
         });
 
         Vue.filter("percent", (value: any, precision: number = 1) => {
-            return formatNumber(value, precision, " %");
+            return formatNumber(value, precision, " %", false);
         });
 
         Vue.filter("number", (value: any, precision: number = 2, suffix: string = "") => {

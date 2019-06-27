@@ -52,4 +52,14 @@ export default class Tools {
         const mEndDate = moment(endDate, "DD-MM-YYYY");
         return Math.ceil(mEndDate.diff(mBeginDate, "day") / 7);
     }
+
+    static isSidebarActive(name: string): boolean {
+        const element = _.invoke(document, "querySelector", ".leaflet-sidebar-tabs .active a");
+
+        if (!element) {
+            return false;
+        }
+
+        return (name === element.getAttribute("name"));
+    }
 }

@@ -17,11 +17,13 @@ const formatNumber = (value: any, precision: number, suffix: string = "",showErr
     const formatter = new Intl.NumberFormat(locale, options);
 
     let result = formatter.format(value) + suffix;
-    if ("NaN" + suffix === result) {
-        result = "<span class='red-text'>Nombre attendu</span>";
-    }
+
     if ("NaN" + suffix === result && !showError) {
         return originalValue;
+    }
+
+    if ("NaN" + suffix === result) {
+        result = "<span class='red-text'>Nombre attendu</span>";
     }
 
     return result;

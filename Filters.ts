@@ -66,5 +66,9 @@ export default {
         Vue.filter("string", (value: string, prefix: string = "", suffix: string = "") => {
             return prefix + value + suffix;
         });
+
+        Vue.filter("text", (value: string, prefix: string = "", suffix: string = "") => {
+            return prefix + value + suffix;
+        });
     },
 };

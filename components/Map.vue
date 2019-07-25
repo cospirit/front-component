@@ -113,7 +113,6 @@ export default class Map extends Vue {
     @Prop({ default: "500px" }) public width!: string;
     @Prop({ default: "500px" }) public height!: string;
     @Prop({ default: 10 }) public zoom!: number;
-    @Prop({ default: null }) public bounds!: LatLngBoundsExpression & string[];
     @Prop({ default: [] }) public markers!: MarkerList[];
     @Prop({ default: [] }) public mapEvents!: Event[];
     @Prop({ default: null }) public controls!: Layer[];
@@ -158,6 +157,9 @@ export default class Map extends Vue {
             this.cursor = cursor;
         });
         EventBus.$on("change-map-sidebar", this.onChangeSidebarControl);
+        EventBus.$on("change-bounds", (bounds: LatLngBoundsExpression) => {
+            this.map.fitBounds(bounds, { maxZoom: 14 });
+        })
     }
 
     @Watch("resize") public resizeMap() {
@@ -207,11 +209,6 @@ export default class Map extends Vue {
 
             this.addMarkerToLayer(newLayer);
         });
-
-        // Focus map on bounds (coordinates list)
-        if (this.bounds && this.bounds.length > 0) {
-            this.map.fitBounds(this.bounds, { maxZoom: 14 });
-        }
     }
 
     @Watch("mapEvents") public onEventsChange() {

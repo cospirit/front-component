@@ -158,7 +158,9 @@ export default class Map extends Vue {
         });
         EventBus.$on("change-map-sidebar", this.onChangeSidebarControl);
         EventBus.$on("change-bounds", (bounds: LatLngBoundsExpression) => {
-            this.map.fitBounds(bounds, { maxZoom: 14 });
+            if (0 < bounds.length) {
+                this.map.fitBounds(bounds, { maxZoom: 14 });
+            }
         })
     }
 

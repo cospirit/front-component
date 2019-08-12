@@ -128,13 +128,13 @@ export default class Map extends Vue {
             [ 45.749095 , 4.82665 ],
             this.zoom,
         );
-        let satellite = L.tileLayer("http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+        let satellite = L.tileLayer("https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
             {
                 maxZoom: 20,
                 subdomains: [ "mt0" ],
             },
         ).addTo(this.map);
-        let plan = L.tileLayer("http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+        let plan = L.tileLayer("https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
             {
                 maxZoom: 20,
                 subdomains: [ "mt0" ],

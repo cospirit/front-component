@@ -1,6 +1,6 @@
 <template>
     <div :class="classes">
-        <select v-model="filter" class="browser-default">
+        <select v-model="filterSelect" class="browser-default">
             <option
                 v-for="(option, key) in options"
                 :value="option.key"
@@ -18,7 +18,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
 import _ from "lodash";
-import EventBus from "cospirit-front-component/EventBus";
+import EventBus from "../EventBus";
 
 @Component({})
 export default class SelectSearch extends Vue {
@@ -27,13 +27,13 @@ export default class SelectSearch extends Vue {
     @Prop() public options!: object[];
     @Prop() public classes!: string;
 
-    private filter: string = "";
+    protected filterSelect: string = "";
 
     public mounted(): void {
-        this.filter = this.value;
+        this.filterSelect = this.value;
     }
 
-    @Watch("filter") public onFilterChange(value: string): void {
+    @Watch("filterSelect") public onFilterChange(value: string): void {
         EventBus.$emit("update-filter", _.set({}, this.filterName, value));
     }
 }

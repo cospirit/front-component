@@ -1,14 +1,14 @@
 version: "3"
 services:
   cospirit-front-component:
-    image: cospirit/node:latest
+    image: cospirit/node:10.11
     container_name: cospirit-front-component
     restart: "no"
     working_dir: /srv/cospirit-front-component
     hostname: cospirit-front-component
     tty: true
     networks:
-      - dockerinfra_default
+      - public
     volumes:
       - ./:/srv/cospirit-front-component
       - $SSH_AUTH_SOCK:/ssh-agent
@@ -19,6 +19,7 @@ services:
     labels:
       - "traefik.backend=app-cospirit-front-component"
       - "traefik.frontend.rule=Host:cospirit-front-component.localhost"
+      - "traefik.docker.network=public"
 networks:
-  dockerinfra_default:
+  public:
     external: true

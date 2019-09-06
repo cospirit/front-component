@@ -5,6 +5,7 @@
             :height="height"
             :src="owner.logo.link"
             :class="classes"
+            alt="logo"
         >
     </span>
 </template>

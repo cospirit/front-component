@@ -14,14 +14,13 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
 import L, { LatLngBoundsExpression, Layer, LayerGroup, Control, Map as LeafleatMap, LeafletMouseEvent } from "leaflet";
-import { GeoSearchControl, OpenStreetMapProvider } from "../leaflet-geosearch/lib/index.js";
-import Pin from "../Pin"
+import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import "leaflet-fullscreen";
 import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
-import "../streetview/streetview";
-import "../streetview/streetview.css";
+import "leaflet-pegman/leaflet-pegman.min.css";
+import "../streetview/streetview"; //@Todo: replace it by "leaflet-pegman" library
 import _ from "lodash";
-import EventBus from "cospirit-front-component/EventBus";
+import EventBus from "../EventBus";
 
 export interface MarkerList {
     name: string;
@@ -87,10 +86,14 @@ export interface Options {
     fullscreen?: {
         active: boolean;
         options?: object;
+        titleFalse?: string;
+        titleTrue?: string;
     };
     zoomControl?: {
         active: boolean;
         options?: object;
+        zoomInTitle?: string;
+        zoomOutTitle?: string;
     };
 
     eventClick?: EventClick[];
@@ -104,7 +107,7 @@ export default class Map extends Vue {
     static SIDEBAR_ENABLE = "enable";
 
     private layerControl: L.Control.Layers;
-    private eventclicks: EventClick[] = [];
+    protected eventclicks: EventClick[] = [];
     private map: LeafleatMap;
     private sidebar: Sidebar | null = null;
     private drawer: L.Control.Draw | null = null;
@@ -294,11 +297,10 @@ export default class Map extends Vue {
                 new L.Control.Pegman(
                     this.options.streetview.options
                     || {
-                        position: 'bottomright',
+                        position: "bottomright",
                         clickableStreetViewLayer: false, // WARNING: when enabled it will violate Google ToS rules
-                        theme: "leaflet-pegman",
-                    }
-                ).addTo(this.map);
+                        theme: "leaflet-pegman-v3-small",
+                    }).addTo(this.map)
             }
 
             if (this.options.zoomControl && true === this.options.zoomControl.active) {

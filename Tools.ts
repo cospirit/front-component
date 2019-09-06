@@ -1,25 +1,32 @@
 import { LatLng } from "leaflet";
 import moment from "moment";
+import _ from "lodash";
 
 interface Attributes {
     [key: string]: number;
 }
 
 export default class Tools {
-    static generateUuid(mask: string = "xxxxxxxx"): string {
+    public static generateUuid(mask: string = "xxxxxxxx"): string {
         return mask + "-xxxx-xxxx-xxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
             const d = new Date().getTime();
+            // tslint:disable-next-line:no-bitwise
             const r = (d + Math.random() * 16) % 16 | 0;
+            // tslint:disable-next-line:no-bitwise
             return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
         });
     }
 
-    static generateFakeUuid(): string {
+    public static generateFakeUuid(): string {
         return this.generateUuid("0FA4E1D0");
     }
 
     // Generate circle from center and radius for leaflet
-    static generateMapCircke(center: LatLng, radius: number, nbPoints: number = 100, polygon: boolean = false): any {
+    public static generateMapCircke(
+        center: LatLng,
+        radius: number,
+        nbPoints: number = 100,
+        polygon: boolean = false): any {
         const d2r = Math.PI / 180; // degrees to radians
         const r2d = 180 / Math.PI; // radians to degrees
 
@@ -29,7 +36,7 @@ export default class Tools {
 
         const circle = [];
         for (let i = 0; i < nbPoints + 1; i++) {
-            const theta = Math.PI * (i / (nbPoints/2));
+            const theta = Math.PI * (i / (nbPoints / 2));
             const lng = center.lng + (rlng * Math.cos(theta)); // center a + radius x * cos(theta)
             const lat = center.lat + (rlat * Math.sin(theta)); // center b + radius y * sin(theta)
             circle.push(new LatLng(lat, lng));
@@ -42,7 +49,7 @@ export default class Tools {
         return circle;
     }
 
-    static latLngToPolygon(coordinates: LatLng[]): any {
+    public static latLngToPolygon(coordinates: LatLng[]): any {
         const polygon: any[] = [];
         coordinates.forEach((latLng: LatLng) => {
             polygon.push([latLng.lng, latLng.lat]);
@@ -51,13 +58,13 @@ export default class Tools {
         return [polygon];
     }
 
-    static weeksCount(beginDate: string, endDate: string): number {
+    public static weeksCount(beginDate: string, endDate: string): number {
         const mBeginDate = moment(beginDate, "DD-MM-YYYY");
         const mEndDate = moment(endDate, "DD-MM-YYYY");
         return Math.ceil(mEndDate.diff(mBeginDate, "day") / 7);
     }
 
-    static isSidebarActive(name: string): boolean {
+    public static isSidebarActive(name: string): boolean {
         const element = _.invoke(document, "querySelector", ".leaflet-sidebar-tabs .active a");
 
         if (!element) {
@@ -67,7 +74,7 @@ export default class Tools {
         return (name === element.getAttribute("name"));
     }
 
-    static processAttributes(irisAttributes: Attributes, totalIrisAttributes: Attributes): Attributes {
+    public static processAttributes(irisAttributes: Attributes, totalIrisAttributes: Attributes): Attributes {
         return {
             numberOfMen: this.getPercentageForAttribute(
                 irisAttributes, totalIrisAttributes, "numberOfMen", "population",
@@ -131,7 +138,7 @@ export default class Tools {
         };
     }
 
-    static getPercentageForAttribute(
+    public static getPercentageForAttribute(
         irisAttributes: Attributes,
         totalIrisAttributes: Attributes,
         attribute: string,

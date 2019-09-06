@@ -1,5 +1,5 @@
-import {} from "googlemaps";
 import {LatLng} from "leaflet";
+import {} from "googlemaps";
 
 interface PointToDestination {
     point: LatLng;
@@ -13,7 +13,7 @@ interface IsoCurveOption {
     time?: number;
     distance?: number;
     radius?: number;
-    onSuccess?: () => void;
+    onSuccess?: (success: string) => void;
     onError?: () => void;
 }
 
@@ -29,8 +29,8 @@ export default class GoogleIsochrone {
         const time: number = options.time ? options.time : 1;
         const distance: number = options.distance ? options.distance : 1;
         const radius: number = options.radius ? options.radius : (  "time" === method ? time : distance);
-        const onSuccess = options.onSuccess ? options.onSuccess : (results: string) => { return; };
-        const onError = options.onError ? options.onError : (error: string) => { return; };
+        const onSuccess = options.onSuccess ? options.onSuccess : () => { return; };
+        const onError = options.onError ? options.onError : () => { return; };
 
         // Create default point:
         const radiusLatLng: LatLng = GoogleIsochrone.getRadiusLatLng(center, radius * 0.66);
@@ -102,7 +102,7 @@ export default class GoogleIsochrone {
                     if (row.elements.length && row.elements[0].duration) {
                         // Compute radiusLatLng corrected by interpolated google duration
                         let coeffRadius: number = 1;
-                        console.log(row.elements[0]);
+
                         if ("time" === method) {
                             coeffRadius = radius * 60 / row.elements[0].duration.value;
                         } else {

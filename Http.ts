@@ -69,12 +69,16 @@ export default class Http {
                         }
 
                         if (error.response) {
-                            _.forEach(error.response.data.status.messages, (messages: string[], fieldName: string) => {
-                                errorFunction += fieldName + " : ";
-                                messages.forEach((message) => {
-                                    errorFunction += message + "<br>";
+                            if (_.get(error.response.data, "status.messages")) {
+                                _.forEach(error.response.data.status.messages, (messages: string[], fieldName: string) => {
+                                    errorFunction += fieldName + " : ";
+                                    messages.forEach((message) => {
+                                        errorFunction += message + "<br>";
+                                    });
                                 });
-                            });
+                            } else {
+                                errorFunction = "The operation was not able to be made, please warn the IT team.";
+                            }
                         }
 
                         M.toast({

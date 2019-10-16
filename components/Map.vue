@@ -306,6 +306,8 @@ export default class Map extends Vue {
                     this.options.zoomControl.options
                     || {
                         position: "bottomright",
+                        zoomInTitle: this.options.zoomControl.zoomInTitle || "Zoom in",
+                        zoomOutTitle: this.options.zoomControl.zoomOutTitle || "Zoom out",
                     }).addTo(this.map);
             }
 
@@ -375,7 +377,11 @@ export default class Map extends Vue {
 
             if (this.options.fullscreen && true === this.options.fullscreen.active) {
                 this.map.addControl(_.invoke(L.control, "fullscreen", {
-                    position: 'bottomright'
+                    position: 'bottomright',
+                    title: {
+                        false: this.options.fullscreen.titleFalse || "View Fullscreen",
+                        true: this.options.fullscreen.titleTrue || "Exit Fullscreen ",
+                    }
                 }));
             }
 

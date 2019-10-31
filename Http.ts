@@ -34,15 +34,22 @@ export default class Http {
         (new Http).call("delete", link, params, successFunction, errorFunction);
     }
 
-    private call(method: string, link: string, data: object, successFunction: any, errorFunction: any): void {
+    public static download(link: string, params: object, successFunction: any, errorFunction?: any): void {
+        (new Http).call("get", link, params, successFunction, errorFunction, { responseType: "blob" });
+    }
+
+    private call(method: string, link: string, data: object, successFunction: any, errorFunction: any, extraConfig: any = {}): void {
         const currentTimestamp = Date.now();
         Loading.mutations.increase(Loading.state);
         $http
-            .request(Configuration.get("apiUri") + link, {
-                headers: Http.getHeaders(),
-                method,
-                data,
-            })
+            .request(Configuration.get("apiUri") + link, _.assign(
+                {
+                    headers: Http.getHeaders(),
+                    method,
+                    data,
+                },
+                extraConfig
+            ))
             .then((response: any) => {
                 Loading.mutations.decrease(Loading.state);
                 if(Configuration.get("lastValidTimestamp") <= currentTimestamp) {

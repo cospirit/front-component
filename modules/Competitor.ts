@@ -1,5 +1,5 @@
-import Http, {Data} from "cospirit-front-component/Http";
-import Pin from "cospirit-front-component/Pin";
+import Http, { Data } from "../Http";
+import Pin from "../Pin";
 import { Marker } from "leaflet";
 import M from "materialize-css";
 import _ from "lodash";
@@ -181,15 +181,15 @@ export default {
         },
     },
     actions: {
-        loadCompetitors: ({ commit }) => {
+        loadCompetitors: (store: { commit: any }) => {
             Http.search(
                 "/search/competitortype",
                 { fields: [ "parent.code", "name", "code", "uuid", "competitorGroups.uuid" ] },
                 (data: Data) => {
-                    commit('setCompetitorsType', data.data);
+                    store.commit("setCompetitorsType", data.data);
                 },
                 (error: Data) => {
-                    commit('setCompetitorsType', null);
+                    store.commit("setCompetitorsType", null);
                     M.toast({ html: error.message, classes: "red" });
                 },
             );
@@ -197,13 +197,13 @@ export default {
                 "/search/competitorgroup",
                 { fields: [ "uuid", "name", "logoBase64" ] },
                 (data: Data) => {
-                    commit('setCompetitorsGroup', data.data);
+                    store.commit("setCompetitorsGroup", data.data);
                 },
                 (error: Data) => {
-                    commit('setCompetitorsGroup', null);
+                    store.commit("setCompetitorsGroup", null);
                     M.toast({ html: error.message, classes: "red" });
                 },
             );
-        }
-    }
+        },
+    },
 };

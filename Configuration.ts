@@ -1,9 +1,8 @@
-import axios from 'axios';
-import _ from "lodash";
+import axios from "axios";
 import EventBus from "./EventBus";
 
 class Configuration {
-    private configuration = {
+    private configuration: { [index: string]: any } = {
         debug: false,
         env: "prod",
         apiUri: "",
@@ -20,12 +19,11 @@ class Configuration {
     /**
      * Load configuration using Promise
      */
-    public load(configurationFilePath = location.origin + '/configuration.json'): any
-    {
+    public load(configurationFilePath = location.origin + "/configuration.json"): Promise<object> {
         return new Promise((resolve: any) => {
             axios
                 .get(configurationFilePath)
-                .then(response => {
+                .then((response) => {
                     this.configuration = {
                         ...this.configuration,
                         ...response.data,
@@ -41,9 +39,14 @@ class Configuration {
         });
     }
 
-    public get(label: string): any
-    {
-        return _.get(this.configuration, label, "");
+    /**
+     * Get configuration by label.
+     * @param label
+     */
+    public get(label: string): any {
+        return this.configuration.hasOwnProperty(label)
+            ? this.configuration[label]
+            : "";
     }
 }
 

@@ -18,6 +18,6 @@ export default {
     actions: {
         updateAction: ({ commit }: any, action: string) => {
             commit(action);
-        }
-    }
+        },
+    },
 };

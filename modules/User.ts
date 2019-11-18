@@ -1,6 +1,6 @@
 import Router, { Route } from "vue-router";
-import Http, {Data} from "cospirit-front-component/Http";
-import Configuration from "cospirit-front-component/Configuration";
+import Http, {Data} from "../Http";
+import Configuration from "../Configuration";
 import M from "materialize-css";
 import { decode } from "jwt-simple";
 
@@ -41,7 +41,7 @@ const refreshToken = (state: any, router: Router, afterLoad: any) => {
 
             // refresh all 3 mn
             if (!state.timeoutId) {
-                state.timeoutId = setTimeout(() => { refreshToken(state, router); }, 60 * 3 * 1000);
+                state.timeoutId = setTimeout(() => { refreshToken(state, router, false); }, 60 * 3 * 1000);
             }
         },
         (error: Data) => {
@@ -83,7 +83,7 @@ export default {
                 router.beforeEach((to: Route, from: Route, next: any) => {
                     // Set current access_token
                     if ("token" === to.name) {
-                        localStorage.setItem("access_token", to.query.code ? to.query.code : "");
+                        localStorage.setItem("access_token", to.query.code ? to.query.code as string : "");
                         state.refreshUser(state, router, afterLoad);
 
                         return;

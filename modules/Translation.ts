@@ -1,4 +1,4 @@
-import Http, {Data} from "cospirit-front-component/Http";
+import Http, {Data} from "../Http";
 import M from "materialize-css";
 
 const TRANSLATION_ROUTE = "/search/translation";

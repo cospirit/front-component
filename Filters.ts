@@ -1,6 +1,6 @@
 import moment from "moment";
 
-const formatNumber = (value: any, precision: number, suffix: string = "",showError: boolean = true) => {
+const formatNumber = (value: any, precision: number, suffix: string = "", showError: boolean = true) => {
     const originalValue = value;
     if (typeof value === "string" && value.length > 0) {
         value = parseFloat(value);

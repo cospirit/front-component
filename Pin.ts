@@ -16,10 +16,10 @@ export default class Pin {
     public static createEntityMarkerList(entityList: any[], clickable: any, draggable: any): Marker[] {
         const list: any[] = [];
         entityList.forEach((entity) => {
-            const pin = {
-                latitude: entity.address.coordinates.latitude,
-                longitude: entity.address.coordinates.longitude,
-                logo: _.get(entity.logo, "link", null),
+            const pin: IPin = {
+                latitude: entity.address.coordinates.latitude as number,
+                longitude: entity.address.coordinates.longitude as number,
+                logo: _.get(entity.logo, "link", ""),
             };
             list.push(this.createEntityMarker(pin, clickable, draggable));
         });
@@ -50,7 +50,6 @@ export default class Pin {
             [ lat, lng ],
             {
                 draggable: !!draggable,
-                clickable: !!clickable,
                 icon: this.getCustomMarkerSvgCode(icon, width, height),
             },
         );

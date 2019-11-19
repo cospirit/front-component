@@ -1,5 +1,5 @@
 import Http, {Data} from "../Http";
-import M from "materialize-css";
+import EventBus from "../EventBus";
 
 const TRANSLATION_ROUTE = "/search/translation";
 
@@ -48,7 +48,7 @@ export default {
                     (data: Data) => { state.translations = data.data; },
                     (error: Data) => {
                         state.translations = null;
-                        M.toast({ html: error.message, classes: "red"});
+                        EventBus.$emit("error-alert", { message: error.message });
                     },
                 );
             };

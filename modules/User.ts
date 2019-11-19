@@ -1,7 +1,7 @@
 import Router, { Route } from "vue-router";
 import Http, {Data} from "../Http";
 import Configuration from "../Configuration";
-import M from "materialize-css";
+import EventBus from "../EventBus";
 import { decode } from "jwt-simple";
 
 const LOGIN_ROUTE = "/search/token";
@@ -47,7 +47,7 @@ const refreshToken = (state: any, router: Router, afterLoad: any) => {
         (error: Data) => {
             state.currentUser = null;
             localStorage.setItem("access_token", "");
-            M.toast({ html: error.message, classes: "red"});
+            EventBus.$emit("error-alert", { message: error.message });
         },
     );
 };

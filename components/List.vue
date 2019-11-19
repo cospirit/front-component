@@ -12,7 +12,7 @@ import Component from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
 import Preloader from "./Preloader.vue";
 import Http, { Data } from "../Http";
-import M from "materialize-css";
+import EventBus from "../EventBus";
 
 @Component({ components: { Preloader } })
 export default class List extends Vue {
@@ -96,10 +96,10 @@ export default class List extends Vue {
                     },
                     (error: any) => {
                         if (this.$options.filters) {
-                            M.toast({
-                                html: this.$options.filters.trans("An error occurred while loading the list."),
-                                classes: "red darken-2",
-                            });
+                            EventBus.$emit(
+                                "error-alert",
+                                { message: this.$options.filters.trans("An error occurred while loading the list.") }
+                            );
                             this.loading = false;
                         }
                     },

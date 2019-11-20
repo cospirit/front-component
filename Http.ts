@@ -1,6 +1,6 @@
 import $http from "axios";
 import _ from "lodash";
-import M from "materialize-css";
+import EventBus from "./EventBus";
 import Configuration from "./Configuration";
 import Loading from "./modules/Loading";
 
@@ -66,10 +66,7 @@ export default class Http {
                     if (successFunction) {
                         successFunction(response.data);
                     } else {
-                        M.toast({
-                            html: "Operation successfully completed.",
-                            classes: "green",
-                        });
+                        EventBus.$emit("success-alert", { message: "Operation successfully completed." });
                     }
                 }
             })
@@ -107,10 +104,7 @@ export default class Http {
                     }
                 }
 
-                M.toast({
-                    html: errorFunction,
-                    classes: "red",
-                });
+                EventBus.$emit("error-alert", { message: errorFunction });
             })
         ;
     }

@@ -1,7 +1,7 @@
 import Http, { Data } from "../Http";
 import Pin from "../Pin";
 import { Marker } from "leaflet";
-import M from "materialize-css";
+import EventBus from "../EventBus";
 import _ from "lodash";
 
 export interface ICompetitorType {
@@ -190,7 +190,10 @@ export default {
                 },
                 (error: Data) => {
                     store.commit("setCompetitorsType", null);
-                    M.toast({ html: error.message, classes: "red" });
+                    EventBus.$emit(
+                        "error-alert",
+                        { message: error.message }
+                    );
                 },
             );
             Http.search(
@@ -201,7 +204,7 @@ export default {
                 },
                 (error: Data) => {
                     store.commit("setCompetitorsGroup", null);
-                    M.toast({ html: error.message, classes: "red" });
+                    EventBus.$emit("error-alert", { message: error.message });
                 },
             );
         },

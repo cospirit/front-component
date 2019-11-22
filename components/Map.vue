@@ -17,8 +17,10 @@ import L, { LatLngBoundsExpression, Layer, LayerGroup, Control, Map as LeafleatM
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import "leaflet-fullscreen";
 import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
+import "leaflet.gridlayer.googlemutant";
 import "leaflet-pegman/leaflet-pegman.min.css";
-import "../streetview/streetview"; //@Todo: replace it by "leaflet-pegman" library
+import "leaflet-pegman/leaflet-pegman.min";
+import "leaflet-sidebar-v2";
 import _ from "lodash";
 import EventBus from "../EventBus";
 
@@ -41,13 +43,6 @@ export interface EventClick {
 export interface SidebarControl {
     action: string;
     id: string | string[];
-}
-
-export interface Sidebar extends L.Control {
-    enablePanel(id: string): void;
-    open(id: string): void;
-    disablePanel(id: string): void;
-    close(id: string): void;
 }
 
 export interface Options {
@@ -106,10 +101,9 @@ export default class Map extends Vue {
     static SIDEBAR_DISABLE = "disable";
     static SIDEBAR_ENABLE = "enable";
 
-    private layerControl: L.Control.Layers;
-    protected eventclicks: EventClick[] = [];
-    private map: LeafleatMap;
-    private sidebar: Sidebar | null = null;
+    private layerControl: L.Control.Layers | null = null;
+    private map: LeafleatMap | null = null;
+    private sidebar: L.Control.Sidebar | null = null;
     private drawer: L.Control.Draw | null = null;
     public cursor: string = "default";
 
@@ -119,15 +113,15 @@ export default class Map extends Vue {
     @Prop({ default: [] }) public markers!: MarkerList[];
     @Prop({ default: [] }) public mapEvents!: Event[];
     @Prop({ default: null }) public controls!: Layer[];
-    @Prop({ default: () => { return [] } }) public mapControls: Control[];
-    @Prop() public resize: number;
-    @Prop({ default: "map" }) public idMap: string;
-    @Prop({ }) public options: Options;
+    @Prop({ default: () => { return [] } }) public mapControls!: Control[];
+    @Prop() public resize!: number;
+    @Prop({ default: "map" }) public idMap!: string;
+    @Prop({ }) public options!: Options;
     @Prop({ default: null }) public sidebarControl!: SidebarControl;
-    @Prop({ default: true }) public drawerControl: boolean;
+    @Prop({ default: true }) public drawerControl!: any;
 
     public mounted(): void {
-        this.map = L.map(this.idMap, { zoomControl: false }).setView(
+        const map: LeafleatMap = L.map(this.idMap, { zoomControl: false }).setView(
             [ 45.749095 , 4.82665 ],
             this.zoom,
         );
@@ -136,23 +130,25 @@ export default class Map extends Vue {
                 maxZoom: 20,
                 subdomains: [ "mt0" ],
             },
-        ).addTo(this.map);
+        ).addTo(map);
         let plan = L.tileLayer("https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
             {
                 maxZoom: 20,
                 subdomains: [ "mt0" ],
             },
-        ).addTo(this.map);
+        ).addTo(map);
 
-        this.layerControl = L.control.layers({ "Satelite": satellite, "Plan": plan }).addTo(this.map);
+        const layerControl: L.Control.Layers = L.control.layers({ "Satelite": satellite, "Plan": plan });
+        layerControl.addTo(map);
         this.controls.forEach((control: Layer) => {
-            this.layerControl.addBaseLayer(control, _.get(control, "name", ""))
+            layerControl.addBaseLayer(control, _.get(control, "name", ""))
         });
+        this.layerControl = layerControl;
 
         this.mapControls.forEach((control: Control) => {
-            control.addTo(this.map);
+            control.addTo(map);
         });
-
+        this.map = map;
         this.loadOptions();
 
         EventBus.$on("add-map-event", this.addMapEvent);
@@ -160,15 +156,17 @@ export default class Map extends Vue {
             this.cursor = cursor;
         });
         EventBus.$on("change-map-sidebar", this.onChangeSidebarControl);
-        EventBus.$on("change-bounds", (bounds: LatLngBoundsExpression) => {
-            if (0 < bounds.length) {
+        EventBus.$on("change-bounds", (bounds: [number, number][]) => {
+            if (0 < bounds.length && this.map) {
                 this.map.fitBounds(bounds, { maxZoom: 14 });
             }
         })
     }
 
     @Watch("resize") public resizeMap() {
-        this.map.invalidateSize();
+        if (this.map) {
+            this.map.invalidateSize();
+        }
     }
 
     @Watch("markers") public onMarkersChange(newValue: MarkerList[], oldValue: MarkerList[]) {
@@ -179,9 +177,9 @@ export default class Map extends Vue {
                 return newLayer.name === oldLayer.name;
             });
 
-            if (!find) {
+            if (!find && this.map) {
                 this.map.eachLayer((layer: Layer): void => {
-                    if (_.get(layer, "layerName", "")=== oldLayer.name) {
+                    if (_.get(layer, "layerName", "") === oldLayer.name && this.map) {
                         this.map.removeLayer(layer);
                     }
                 });
@@ -199,9 +197,9 @@ export default class Map extends Vue {
                 return newLayer.name === oldLayer.name;
             });
 
-            if (find) {
+            if (find && this.map) {
                 this.map.eachLayer((layer: Layer): void => {
-                    if (_.get(layer, "layerName", "") === newLayer.name) {
+                    if (_.get(layer, "layerName", "") === newLayer.name && this.map) {
                         this.map.removeLayer(layer);
                     }
                 });
@@ -218,13 +216,17 @@ export default class Map extends Vue {
 
     @Watch("mapEvents") public onEventsChange() {
         this.mapEvents.forEach((event: Event) => {
-            this.map.on(event.eventType, event.eventAction);
+            if (this.map) {
+                this.map.on(event.eventType, event.eventAction);
+            }
         });
     }
 
     @Watch("mapControls") public onMapControlsChange() {
         this.mapControls.forEach((control: Control) => {
-            control.addTo(this.map);
+            if (this.map) {
+                control.addTo(this.map);
+            }
         });
     }
 
@@ -233,7 +235,9 @@ export default class Map extends Vue {
             _.remove(_.get(this.layerControl, "_layers", []), (layerControl: Layer) => {
                 return _.get(layerControl, "name","") === _.get(control, "name", null);
             });
-            this.layerControl.addBaseLayer(control, _.get(control, "name", ""));
+            if (this.layerControl) {
+                this.layerControl.addBaseLayer(control, _.get(control, "name", ""));
+            }
         });
     }
 
@@ -248,11 +252,11 @@ export default class Map extends Vue {
                 this.sidebar.open(id);
             }
             if (this.sidebar && sidebarControl.action === Map.SIDEBAR_CLOSE) {
-                this.sidebar.close(id);
+                this.sidebar.close();
                 this.sidebar.disablePanel(id);
             }
             if (this.sidebar && sidebarControl.action === Map.SIDEBAR_DISABLE) {
-                this.sidebar.close(id);
+                this.sidebar.close();
                 this.sidebar.disablePanel(id);
             }
             if (this.sidebar && sidebarControl.action === Map.SIDEBAR_ENABLE) {
@@ -266,20 +270,24 @@ export default class Map extends Vue {
             this.drawer.remove();
         }
 
-        if (this.drawerControl.options) {
+        if (_.get(this.drawerControl, "options", false)) {
             this.drawer = new L.Control.Draw(
                 {
                     position: 'topleft',
-                    draw: this.drawerControl.options
+                    draw: _.get(this.drawerControl, "options"),
                 }
             );
-            this.drawer.addTo(this.map);
+            if (this.map) {
+                this.drawer.addTo(this.map);
+            }
         }
     }
 
     public addMapEvent(events: Event[]) {
         events.forEach((event: Event) => {
-            this.map.on(event.eventType, event.eventAction);
+            if (this.map) {
+                this.map.on(event.eventType, event.eventAction);
+            }
         });
     }
 
@@ -287,13 +295,17 @@ export default class Map extends Vue {
         const layer: LayerGroup  = L.layerGroup(markerList.markers);
 
         _.set(layer, "layerName", markerList.name);
-        layer.addTo(this.map);
-        this.layerControl.addOverlay(layer, markerList.name);
+        if (this.map) {
+            layer.addTo(this.map);
+        }
+        if (this.layerControl) {
+            this.layerControl.addOverlay(layer, markerList.name);
+        }
     }
 
     private loadOptions() {
         if (this.options) {
-            if (this.options.streetview && true === this.options.streetview.active) {
+            if (this.options.streetview && true === this.options.streetview.active && this.map) {
                 new L.Control.Pegman(
                     this.options.streetview.options
                     || {
@@ -303,7 +315,7 @@ export default class Map extends Vue {
                     }).addTo(this.map)
             }
 
-            if (this.options.zoomControl && true === this.options.zoomControl.active) {
+            if (this.options.zoomControl && true === this.options.zoomControl.active && this.map) {
                 L.control.zoom(
                     this.options.zoomControl.options
                     || {
@@ -323,52 +335,35 @@ export default class Map extends Vue {
                         position: "left",
                     }
                 );
-                this.sidebar.addTo(this.map);
+                if (this.sidebar && this.map) {
+                    this.sidebar.addTo(this.map);
+                }
             }
 
-            if (this.options.traffic && true === this.options.traffic.active) {
-                const trafficMutant = L.gridLayer.googleMutant(
-                    this.options.traffic.options
-                    || {
-                        maxZoom: 20,
-                        type: "roadmap",
+            _.forEach({ traffic: "TrafficLayer", transit: "TransitLayer", bike: "BicyclingLayer"},
+                (type: string, name: string) => {
+                    const configuration: any = _.get(this.options, name);
+                    if (configuration && true === configuration.active) {
+                        const gridLayerGoogleMutant: any = L.gridLayer.googleMutant(
+                            configuration.options
+                            || {
+                                maxZoom: 20,
+                                type: "roadmap",
+                                name,
+                            }
+                        );
+                        gridLayerGoogleMutant.addGoogleLayer(type);
+                        gridLayerGoogleMutant.name = _.get(configuration, "name", "");
+                        if (this.layerControl) {
+                            this.layerControl.addBaseLayer(gridLayerGoogleMutant,  gridLayerGoogleMutant.name);
+                        }
                     }
-                );
-                trafficMutant.addGoogleLayer("TrafficLayer");
-                trafficMutant.name = this.options.traffic.name;
-                this.layerControl.addBaseLayer(trafficMutant,trafficMutant.name);
-            }
+                });
 
-            if (this.options.transit && true === this.options.transit.active) {
-                const transitMutant = L.gridLayer.googleMutant(
-                    this.options.transit.options
-                    || {
-                        maxZoom: 20,
-                        type: "roadmap",
-                    }
-                );
-                transitMutant.addGoogleLayer("TransitLayer");
-                transitMutant.name = this.options.transit.name;
-                this.layerControl.addBaseLayer(transitMutant, transitMutant.name);
-            }
-
-            if (this.options.bike && true === this.options.bike.active) {
-                const bikeMutant = L.gridLayer.googleMutant(
-                    this.options.bike.options
-                    || {
-                        maxZoom: 20,
-                        type: "roadmap",
-                    }
-                );
-                bikeMutant.addGoogleLayer("BicyclingLayer");
-                bikeMutant.name = this.options.bike.name;
-                this.layerControl.addBaseLayer(bikeMutant, bikeMutant.name);
-            }
-
-            if (this.options.address && true === this.options.address.active) {
+            if (this.options.address && true === this.options.address.active && this.map) {
                 const provider = new OpenStreetMapProvider();
                 new GeoSearchControl(
-                    this.options.address.options
+                    this.options.address.options as any
                     || {
                         provider,
                         searchLabel: this.options.address.name,
@@ -377,7 +372,7 @@ export default class Map extends Vue {
                 ).addTo(this.map);
             }
 
-            if (this.options.fullscreen && true === this.options.fullscreen.active) {
+            if (this.options.fullscreen && true === this.options.fullscreen.active && this.map) {
                 this.map.addControl(_.invoke(L.control, "fullscreen", {
                     position: 'bottomright',
                     title: {

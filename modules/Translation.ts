@@ -48,7 +48,7 @@ export default {
                     (data: Data) => { state.translations = data.data; },
                     (error: Data) => {
                         state.translations = null;
-                        EventBus.$emit("error-alert", { message: error.message });
+                        EventBus.$emit("error-alert", { message: error.status.messages });
                     },
                 );
             };

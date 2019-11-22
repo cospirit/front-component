@@ -26,7 +26,7 @@ interface Status {
 
 @Component({ components: { Pastel }})
 export default class StatusPastel extends Vue {
-    @Prop() public status: Status;
+    @Prop() public status!: Status;
     @Prop({ default: 20 }) public size!: number;
     @Prop({ default: 0 }) public borderWidth!: number;
     @Prop({ default: false }) public tooltips!: boolean;

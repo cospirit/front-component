@@ -9,7 +9,7 @@ export interface Properties {
 
 export interface GeoPortalJson {
     type: string;
-    coordinates: string;
+    coordinates: number[][];
 }
 
 @Component({})

@@ -4,8 +4,26 @@ import Configuration from "../Configuration";
 import EventBus from "../EventBus";
 import { decode } from "jwt-simple";
 
+export interface Department {
+    uuid: string;
+    name: string;
+}
+
+export interface User {
+    uuid: string;
+    displayName: string;
+    email: string;
+    roles: string[];
+    department: Department|null;
+}
+
+export interface Login {
+    login: string;
+    password: string;
+}
+
 const LOGIN_ROUTE = "/search/token";
-const refreshToken = (state: any, router: Router, afterLoad: any) => {
+export const refreshToken = (state: any, router: Router|null, afterLoad: any) => {
 
     if (state.timeoutId) {
         clearTimeout(state.timeoutId);
@@ -32,11 +50,13 @@ const refreshToken = (state: any, router: Router, afterLoad: any) => {
                 afterLoad();
             }
 
-            const route = router.resolve(location.href.replace(location.origin, "")).route;
-            if ("token" === route.name) {
-                const lastRoute = localStorage.getItem("lastRoute");
-                localStorage.setItem("lastRoute", "");
-                router.push({path: lastRoute ? lastRoute : "/"});
+            if (router) {
+                const route = router.resolve(location.href.replace(location.origin, "")).route;
+                if ("token" === route.name) {
+                    const lastRoute = localStorage.getItem("lastRoute");
+                    localStorage.setItem("lastRoute", "");
+                    router.push({path: lastRoute ? lastRoute : "/"});
+                }
             }
 
             // refresh all 3 mn
@@ -47,7 +67,7 @@ const refreshToken = (state: any, router: Router, afterLoad: any) => {
         (error: Data) => {
             state.currentUser = null;
             localStorage.setItem("access_token", "");
-            EventBus.$emit("error-alert", { message: error.message });
+            EventBus.$emit("error-alert", { message: error.status.messages });
         },
     );
 };
@@ -56,11 +76,14 @@ export default {
     state: {
         currentUser: null,
         timeoutId: null,
-        refreshUser: (state: any, router: Router, afterLoad: any) => {
+        refreshUser: (state: any, router: Router|null, afterLoad: any) => {
             refreshToken(state, router, afterLoad);
         },
     },
     getters: {
+        getCurrentUser: (state: any) => {
+            return state.currentUser;
+        },
         isAdv: (state: any) => {
             if (state.currentUser && state.currentUser.department && state.currentUser.department.name === "ADV") {
                 return true;
@@ -126,6 +149,12 @@ export default {
                     next();
                 });
             };
+        },
+    },
+    actions: {
+        logMeIn: ({ state }: any, request: Login) => {
+            localStorage.setItem("access_token", request.login + ":" + request.password);
+            state.refreshUser(state, null, false);
         },
     },
 };

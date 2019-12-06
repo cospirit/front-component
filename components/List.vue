@@ -22,9 +22,9 @@ export default class List extends Vue {
     private list: string[] = [];
     protected route: string = "";
     protected elements: object[] = [];
-    protected fields: string[];
+    protected fields: string[] = [];
 
-    @Prop({ default: [] }) public filters: object[];
+    @Prop({ default: [] }) public filters!: object[];
     @Prop({ default: true}) public neededPagination!: boolean;
     @Prop({ default: 50 }) public limitPerPage!: number;
 
@@ -51,7 +51,7 @@ export default class List extends Vue {
         }
     }
 
-    private link(): string {
+    protected link(): string {
         return this.$router.resolve({ name: this.route }).href;
     }
 

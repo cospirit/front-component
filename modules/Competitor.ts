@@ -190,10 +190,7 @@ export default {
                 },
                 (error: Data) => {
                     store.commit("setCompetitorsType", null);
-                    EventBus.$emit(
-                        "error-alert",
-                        { message: error.message }
-                    );
+                    EventBus.$emit("error-alert",  { message: error.status.messages });
                 },
             );
             Http.search(
@@ -204,7 +201,7 @@ export default {
                 },
                 (error: Data) => {
                     store.commit("setCompetitorsGroup", null);
-                    EventBus.$emit("error-alert", { message: error.message });
+                    EventBus.$emit("error-alert", { message: error.status.messages });
                 },
             );
         },

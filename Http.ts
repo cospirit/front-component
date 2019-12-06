@@ -5,7 +5,10 @@ import Configuration from "./Configuration";
 import Loading from "./modules/Loading";
 
 export interface Data {
-    message: string;
+    status: {
+        code: number,
+        messages: { [index: string]: string[]|string },
+    };
     data: any;
 }
 
@@ -70,7 +73,7 @@ export default class Http {
                     }
                 }
             })
-            .catch((error: any) => {
+            .catch((error: { response: { data: Data }|null}) => {
                 Loading.mutations.decrease(Loading.state);
                 if (Configuration.get("lastValidTimestamp") > currentTimestamp) {
                     return;
@@ -80,8 +83,8 @@ export default class Http {
                     console.log(error);
                 }
 
-                if (typeof errorFunction === "function") {
-                    return errorFunction(error);
+                if (typeof errorFunction === "function" && error.response && error.response.data) {
+                    return errorFunction(error.response.data);
                 }
 
                 if (typeof errorFunction !== "string") {
@@ -92,11 +95,15 @@ export default class Http {
                     if (_.get(error.response.data, "status.messages")) {
                         _.forEach(
                             error.response.data.status.messages,
-                            (messages: string[], fieldName: string) => {
+                            (messages: string[]|string, fieldName: string) => {
                                 errorFunction += fieldName + " : ";
-                                messages.forEach((message) => {
-                                    errorFunction += message + "<br>";
-                                });
+                                if (typeof messages !== "string") {
+                                    messages.forEach((message) => {
+                                        errorFunction += message + "<br>";
+                                    });
+                                } else {
+                                    errorFunction += messages + "<br>";
+                                }
                             }
                         );
                     } else {

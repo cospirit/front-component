@@ -55,7 +55,7 @@ export default class List extends Vue {
         return this.$router.resolve({ name: this.route }).href;
     }
 
-    private scrollFunction(): void {
+    protected scrollFunction(): void {
         const windowHeight = window.innerHeight;
         const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop +
             (document.documentElement && document.documentElement.scrollTop || 0);
@@ -73,7 +73,7 @@ export default class List extends Vue {
         this.loadUsingApi();
     }
 
-    private loadUsingApi(): void {
+    protected loadUsingApi(): void {
         const params: object = {
             filters: this.filters,
             fields: this.fields,

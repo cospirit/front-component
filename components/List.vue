@@ -23,16 +23,23 @@ export default class List extends Vue {
     protected route: string = "";
     protected elements: object[] = [];
     protected fields: string[] = [];
+    protected filtersDebounced: () => void;
 
     @Prop({ default: [] }) public filters!: object[];
     @Prop({ default: true}) public neededPagination!: boolean;
     @Prop({ default: 50 }) public limitPerPage!: number;
 
     @Watch("filters") public onFiltersChange(value: object[]): void {
-        this.page = 1;
-        this.hasNextPage = true;
-        this.elements = [];
-        this.loadUsingApi();
+        if (!this.filtersDebounced) {
+            this.filtersDebounced = _.debounce(() => {
+                this.page = 1;
+                this.hasNextPage = true;
+                this.elements = [];
+                this.loadUsingApi();
+            }, 300);
+        }
+
+        this.filtersDebounced();
     }
 
     public mounted(): void {

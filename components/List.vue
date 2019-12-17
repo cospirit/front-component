@@ -7,6 +7,7 @@
 </template>
 
 <script lang="ts">
+import _ from "lodash"
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
@@ -23,7 +24,7 @@ export default class List extends Vue {
     protected route: string = "";
     protected elements: object[] = [];
     protected fields: string[] = [];
-    protected filtersDebounced: () => void;
+    protected filtersDebounced: (() => void)|null = null;
 
     @Prop({ default: [] }) public filters!: object[];
     @Prop({ default: true}) public neededPagination!: boolean;

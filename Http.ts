@@ -15,9 +15,13 @@ export interface Data {
 export default class Http {
 
     public static getHeaders(): object {
+        const accessToken: string = localStorage.getItem("access_token") || "";
+
         return {
             "X-Requested-With": "XMLHttpRequest",
-            "Authorization" : "Bearer " + localStorage.getItem("access_token"),
+            "Authorization" : accessToken.indexOf(":") > 0 ?
+                "Basic " + Buffer.from(accessToken).toString("base64"):
+                "Bearer " + accessToken,
         };
     }
 

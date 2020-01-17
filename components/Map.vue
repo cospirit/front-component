@@ -152,15 +152,26 @@ export default class Map extends Vue {
         this.loadOptions();
 
         EventBus.$on("add-map-event", this.addMapEvent);
-        EventBus.$on("change-map-cursor", (cursor: string) => {
-            this.cursor = cursor;
-        });
+        EventBus.$on("change-map-cursor", this.changeMapCursor);
         EventBus.$on("change-map-sidebar", this.onChangeSidebarControl);
-        EventBus.$on("change-bounds", (bounds: [number, number][]) => {
-            if (0 < bounds.length && this.map) {
-                this.map.fitBounds(bounds, { maxZoom: 14 });
-            }
-        })
+        EventBus.$on("change-bounds", this.changeBounds);
+    }
+
+    public beforeDestroy(): void {
+        EventBus.$off("add-map-event", this.addMapEvent);
+        EventBus.$off("change-map-cursor", this.changeMapCursor);
+        EventBus.$off("change-map-sidebar", this.onChangeSidebarControl);
+        EventBus.$off("change-bounds",  this.changeBounds);
+    }
+
+    private changeMapCursor(cursor: string): void {
+        this.cursor = cursor;
+    }
+
+    private changeBounds(bounds: [number, number][]): void {
+        if (0 < bounds.length && this.map) {
+            this.map.fitBounds(bounds, { maxZoom: 14 });
+        }
     }
 
     @Watch("resize") public resizeMap() {

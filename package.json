@@ -21,7 +21,7 @@
     "leaflet-draw": "^1.0.4",
     "leaflet-fullscreen": "^1.0.2",
     "leaflet-geosearch": "^2.7.0",
-    "leaflet-pegman": "0.0.8",
+    "leaflet-pegman": "0.1.2",
     "leaflet.gridlayer.googlemutant": "0.7.1",
     "leaflet-sidebar-v2": "3.2.1",
     "lodash": "^4.17.15",

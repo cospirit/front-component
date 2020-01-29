@@ -27,6 +27,7 @@ export default class List extends Vue {
     protected filtersDebounced: (() => void)|null = null;
 
     @Prop({ default: [] }) public filters!: object[];
+    @Prop({ default: [] }) public orders!: object[];
     @Prop({ default: true}) public neededPagination!: boolean;
     @Prop({ default: 50 }) public limitPerPage!: number;
 
@@ -41,6 +42,13 @@ export default class List extends Vue {
         }
 
         this.filtersDebounced();
+    }
+
+    @Watch("orders") public onOrdersChange(value: object[]): void {
+        this.page = 1;
+        this.hasNextPage = true;
+        this.elements = [];
+        this.loadUsingApi();
     }
 
     public mounted(): void {
@@ -84,6 +92,7 @@ export default class List extends Vue {
     protected loadUsingApi(): void {
         const params: object = {
             filters: this.filters,
+            orders: this.orders,
             fields: this.fields,
             pagination: {
                 nb_per_page: this.limitPerPage,

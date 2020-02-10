@@ -26,8 +26,8 @@ export default class List extends Vue {
     protected fields: string[] = [];
     protected filtersDebounced: (() => void)|null = null;
 
-    @Prop({ default: [] }) public filters!: object[];
-    @Prop({ default: [] }) public orders!: object[];
+    @Prop({ default: () => [] }) public filters!: object[];
+    @Prop({ default: () => [] }) public orders!: object[];
     @Prop({ default: true}) public neededPagination!: boolean;
     @Prop({ default: 50 }) public limitPerPage!: number;
 

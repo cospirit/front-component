@@ -29,15 +29,25 @@ const formatNumber = (value: any, precision: number, suffix: string = "", showEr
     return result;
 };
 
+const formatDate = (value: any, entryFormat: string, displayFormat: string): string => {
+    return moment(value, entryFormat).format(displayFormat);
+};
+
 export default {
     install(Vue: any) {
-        Vue.filter("date", (value: string, entryFormat: string, displayFormat: string) => {
-            entryFormat =
-                typeof entryFormat !== "undefined" ? entryFormat : "YYYY-MM-DD HH:mm:ss";
-            displayFormat =
-                typeof displayFormat !== "undefined" ? displayFormat : "DD/MM/YYYY";
+        Vue.filter(
+            "date",
+            (
+                value: string,
+                entryFormat: string = "YYYY-MM-DD HH:mm:ss",
+                displayFormat: string = "DD/MM/YYYY"
+            ): string => {
+                return formatDate(value, entryFormat, displayFormat);
+            }
+        );
 
-            return moment(value, entryFormat).format(displayFormat);
+        Vue.filter("datetime", (value: string, entryFormat: string = "YYYY-MM-DD HH:mm:ss"): string => {
+            return formatDate(value, entryFormat, "DD/MM/YYYY HH:mm:ss");
         });
 
         Vue.filter("dashIfEmpty", (value: string) => {

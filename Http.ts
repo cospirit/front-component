@@ -42,7 +42,7 @@ export default class Http {
     }
 
     public static download(link: string, params: object, successFunction: any, errorFunction?: any): void {
-        new Http().call("get", link, params, successFunction, errorFunction, { responseType: "blob" });
+        new Http().call("get", link, [], successFunction, errorFunction, { responseType: "blob", params });
     }
 
     private call(

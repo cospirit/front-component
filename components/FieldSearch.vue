@@ -1,6 +1,6 @@
 <template>
     <div class="input-field search-field">
-        <input :type="type" :class="classes" v-model="filterInput">
+        <input :type="type" :class="classes" v-model="value">
         <label :for="label" >{{ placeholder }}</label>
     </div>
 </template>
@@ -14,17 +14,26 @@ import EventBus from "../EventBus";
 
 @Component({})
 export default class FieldSearch extends Vue {
-    protected filterInput: string = "";
+    protected filterInput: string | null = null;
 
     @Prop() public filterName!: string;
     @Prop() public label!: string;
     @Prop() public placeholder!: string;
+    @Prop({default: ""}) public defaultValue!: string;
     @Prop({default: "text"}) public type!: string;
     @Prop({default: "validate"}) public classes!: string;
 
-    @Watch("filterInput")
-    public onFilterChange(value: string) {
-        EventBus.$emit("update-filter", _.set({}, this.filterName, value));
+    public get value(): string {
+        if (null === this.filterInput) {
+            this.filterInput = this.defaultValue;
+        }
+
+        return this.filterInput;
+    }
+
+    public set value(newValue) {
+        this.filterInput = newValue;
+        EventBus.$emit("update-filter", _.set({}, this.filterName, newValue));
     }
 }
 </script>

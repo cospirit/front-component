@@ -33,6 +33,10 @@ export default class SelectSearch extends Vue {
         this.filterSelect = this.value;
     }
 
+    @Watch("value") public handleValueChange() {
+        this.filterSelect = this.value;
+    }
+
     @Watch("filterSelect") public onFilterChange(value: string): void {
         EventBus.$emit("update-filter", _.set({}, this.filterName, value));
     }

@@ -1,2 +1,5 @@
-# cospirit-front-component
+
+![CoSpirit](doc/logo.png)
+
+# front-component
 

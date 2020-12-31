@@ -20,7 +20,7 @@ export default class Http {
         return {
             "X-Requested-With": "XMLHttpRequest",
             "Authorization" : accessToken.indexOf(":") > 0 ?
-                "Basic " + Buffer.from(accessToken).toString("base64"):
+                "Basic " + Buffer.from(accessToken).toString("base64") :
                 "Bearer " + accessToken,
         };
     }

@@ -2,6 +2,9 @@
 node_modules
 /dist
 
+# env files
+system.env
+
 # Log files
 npm-debug.log*
 yarn-debug.log*

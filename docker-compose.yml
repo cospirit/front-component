@@ -1,26 +1,14 @@
-version: "3"
+version: "3.8"
+
 services:
-  front-component:
+  app:
     image: cospirit/node:10.11
     container_name: front-component_app
     restart: "no"
-    working_dir: /srv/front-component
-    hostname: front-component
+    working_dir: /srv/app
+
     tty: true
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik-proxy"
-      - "traefik.http.routers.front-component.rule=Host(`front-component.cospirit.local`)"
-      - "traefik.http.routers.front-component.entrypoints=web"
-      - "traefik.http.routers.front-component.service=front-component"
-      - "traefik.http.services.front-component.loadbalancer.server.port=80"
-    environment:
-      - SSH_AUTH_SOCK=/ssh-agent
-    networks:
-      - traefik-proxy
-    ports:
-      - 80
-
-networks:
-  traefik-proxy:
-    external: true
+      - "traefik.enable=false"
+    volumes:
+      - ./:/srv/app

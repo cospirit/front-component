@@ -25,7 +25,7 @@ endif
 ##############################
 
 development@install: development@env development@git-hooks.install development@assets.install development@assets.watch
-development@update:  development@restart development@assets.install development@assets.watch
+development@update:  development@down development@assets.install development@assets.watch
 
 development@git-hooks.install:
 	if [ ! -d "/tmp/dev-stack" ]; then \

@@ -1,9 +1,3 @@
-import Router, { Route } from "vue-router";
-import Http, {Data} from "../Http";
-import Configuration from "../Configuration";
-import EventBus from "../EventBus";
-import { decode } from "jwt-simple";
-
 export interface Department {
     uuid: string;
     name: string;
@@ -17,67 +11,13 @@ export interface User {
     department: Department|null;
 }
 
-export interface Login {
-    login: string;
-    password: string;
-}
-
-const LOGIN_ROUTE = "/search/token";
-export const refreshToken = (state: any, router: Router|null, afterLoad: any) => {
-
-    if (state.timeoutId) {
-        clearTimeout(state.timeoutId);
-        state.timeoutId = null;
-    }
-
-    Http.search(
-        LOGIN_ROUTE,
-        {
-            fields: [
-                "token",
-                "user.uuid",
-                "user.displayName",
-                "user.email",
-                "user.roles",
-                "user.department.uuid",
-                "user.department.name",
-            ],
-        },
-        (data: Data) => {
-            state.currentUser = data.data.user;
-            localStorage.setItem("access_token", data.data.token);
-            if (afterLoad) {
-                afterLoad();
-            }
-
-            if (router) {
-                const route = router.resolve(location.href.replace(location.origin, "")).route;
-                if ("token" === route.name) {
-                    const lastRoute = localStorage.getItem("lastRoute");
-                    localStorage.setItem("lastRoute", "");
-                    router.push({path: lastRoute ? lastRoute : "/"});
-                }
-            }
-
-            // refresh all 3 mn
-            if (!state.timeoutId) {
-                state.timeoutId = setTimeout(() => { refreshToken(state, router, false); }, 60 * 3 * 1000);
-            }
-        },
-        (error: Data) => {
-            state.currentUser = null;
-            localStorage.setItem("access_token", "");
-            EventBus.$emit("error-alert", { message: error.status.messages });
-        },
-    );
-};
-
 export default {
     state: {
         currentUser: null,
-        timeoutId: null,
-        refreshUser: (state: any, router: Router|null, afterLoad: any) => {
-            refreshToken(state, router, afterLoad);
+    },
+    mutations: {
+        setCurrentUser: (state: any, user: User) => {
+            state.currentUser = user;
         },
     },
     getters: {
@@ -85,76 +25,20 @@ export default {
             return state.currentUser;
         },
         isAdv: (state: any) => {
-            if (state.currentUser && state.currentUser.department && state.currentUser.department.name === "ADV") {
-                return true;
-            }
-            return false;
+            return !!(state.currentUser && state.currentUser.department && state.currentUser.department.name === "ADV");
+
         },
         isDsi: (state: any) => {
-            if (state.currentUser && state.currentUser.department && state.currentUser.department.name === "DSI") {
-                return true;
-            }
-            return false;
+            return !!(state.currentUser && state.currentUser.department && state.currentUser.department.name === "DSI");
+
         },
         getUserDepartment: (state: any) => {
             return (state.currentUser && state.currentUser.department ? state.currentUser.department.name : "");
         },
-        loadUserUsingSSO: (state: any) => {
-
-            return (router: Router, afterLoad: any) => {
-                // controle route
-                router.beforeEach((to: Route, from: Route, next: any) => {
-                    // Set current access_token
-                    if ("token" === to.name) {
-                        localStorage.setItem("access_token", to.query.code ? to.query.code as string : "");
-                        state.refreshUser(state, router, afterLoad);
-
-                        return;
-                    }
-
-                    // get access_token
-                    const accesToken: string | null = localStorage.getItem("access_token");
-
-                    let validToken = false;
-                    if (accesToken) {
-                        // Test valid access_token
-                        try {
-                            const token = decode(accesToken, "", true);
-                            if (token.exp <= (new Date()).getTime() / 1000) {
-                                localStorage.setItem("access_token", "");
-                            } else {
-                                validToken = true;
-                            }
-                        } catch (error) {
-                            console.log("Token decode error : " + error);
-                        }
-                    }
-
-                    // access_token not valid
-                    if (!validToken) {
-                        localStorage.setItem("lastRoute",  to.path + to.hash);
-
-                        location.href = Configuration.get("ssoUri") +
-                            location.origin +
-                            router.resolve({ name: "token" }).href;
-
-                        return;
-                    }
-
-                    // Have user
-                    if (!state.currentUser) {
-                        state.refreshUser(state, router, afterLoad);
-                    }
-
-                    next();
-                });
-            };
-        },
     },
     actions: {
-        logMeIn: ({ state }: any, request: Login) => {
-            localStorage.setItem("access_token", request.login + ":" + request.password);
-            state.refreshUser(state, null, false);
-        },
+        /*
+            Add your methods to populate this module by "extending" this object
+         */
     },
 };

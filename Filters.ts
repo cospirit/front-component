@@ -30,6 +30,9 @@ const formatNumber = (value: any, precision: number, suffix: string = "", showEr
 };
 
 const formatDate = (value: any, entryFormat: string, displayFormat: string): string => {
+    if (!value) {
+        return "";
+    }
     return moment(value, entryFormat).format(displayFormat);
 };
 

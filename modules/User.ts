@@ -32,6 +32,10 @@ export default {
             return !!(state.currentUser && state.currentUser.department && state.currentUser.department.name === "DSI");
 
         },
+        isLocalMedia: (state: any) => {
+            return !!(state.currentUser && state.currentUser.department && state.currentUser.department.name === "Media Locaux");
+
+        },
         getUserDepartment: (state: any) => {
             return (state.currentUser && state.currentUser.department ? state.currentUser.department.name : "");
         },

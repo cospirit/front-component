@@ -39,6 +39,9 @@ export default {
         getUserDepartment: (state: any) => {
             return (state.currentUser && state.currentUser.department ? state.currentUser.department.name : "");
         },
+        isCospiritUser: (state: any) => {
+            return (state.currentUser && state.currentUser.department);
+        },
     },
     actions: {
         /*

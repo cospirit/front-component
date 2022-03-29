@@ -9,6 +9,7 @@ export interface User {
     email: string;
     roles: string[];
     department: Department|null;
+    internalAccount: boolean;
 }
 
 export default {
@@ -38,6 +39,9 @@ export default {
         },
         getUserDepartment: (state: any) => {
             return (state.currentUser && state.currentUser.department ? state.currentUser.department.name : "");
+        },
+        isCospiritUser: (state: any) => {
+            return (state.currentUser && !state.currentUser.internalAccount);
         },
     },
     actions: {

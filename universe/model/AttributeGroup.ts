@@ -1,7 +1,7 @@
-export interface EntityType {
+export default interface AttributeGroup {
   "@id"?: string;
   label?: string;
-  code?: string;
+  owner?: any;
   createdBy?: string;
   updatedBy?: string;
   readonly createdAt?: Date;

@@ -1,4 +1,4 @@
-export interface BillingEntity {
+export default interface BillingEntity {
   "@id"?: string;
   name?: string;
   businessName?: string;

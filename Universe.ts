@@ -1,6 +1,5 @@
 import $http from "axios";
 import Loading from "./modules/Loading";
-import _ from "lodash";
 import Configuration from "./Configuration";
 import EventBus from "./EventBus";
 
@@ -18,7 +17,7 @@ export default class Universe {
         };
     }
 
-    public static search(link: string, params: object, successFunction: any, errorFunction?: any): void {
+    public static get(link: string, params: object, successFunction: any, errorFunction?: any): void {
         new Universe().call("get", link, params, successFunction, errorFunction);
     }
 
@@ -30,32 +29,40 @@ export default class Universe {
         errorFunction: any,
         extraConfig: any = {}
     ) {
-
         const currentTimestamp = Date.now();
         Loading.mutations.increase(Loading.state);
         $http
-            .request(
-                _.assign(
-                    {
-                        url: Configuration.get("universeUri") + link,
-                        headers: Universe.getHeaders(),
-                        method,
-                        data,
-                    },
-                    extraConfig
-                )
-            ).then((response) => {
-            Loading.mutations.decrease(Loading.state);
-            if (Configuration.get("lastValidTimestamp") <= currentTimestamp) {
-                if (successFunction) {
-                    successFunction(response.data);
-                } else {
-                    EventBus.$emit("success-alert", {message: "Operation successfully completed."});
+            .get(
+                Configuration.get("universeUri") + link,
+                {
+                    params: data,
+                    headers: Universe.getHeaders()
                 }
-            }
-        }).catch((error: { response: { data: any } | null }) => {
+            )
+            // .request(
+            //     _.assign(
+            //         {
+            //             url: Configuration.get("universeUri") + link,
+            //             headers: Universe.getHeaders(),
+            //             method,
+            //             data,
+            //         },
+            //         extraConfig
+            //     )
+            // )
+            .then((response) => {
+                Loading.mutations.decrease(Loading.state);
+                if (Configuration.get("lastValidTimestamp") <= currentTimestamp) {
+                    if (successFunction) {
+                        successFunction(response.data);
+                    } else {
+                        EventBus.$emit("success-alert", {message: "Operation successfully completed."});
+                    }
+                }
+            }).catch((error: { response: { data: any } | null }) => {
             Loading.mutations.decrease(Loading.state);
             console.log(error);
+            errorFunction(error);
         });
     }
 }

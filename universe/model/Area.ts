@@ -1,12 +1,13 @@
-export interface AttributeValue {
+export default interface Area {
   "@id"?: string;
-  attribute?: any;
+  name?: string;
+  description?: string;
+  irisList?: any;
+  enabled?: boolean;
+  type?: any;
   entity?: any;
-  value?: string;
   createdBy?: string;
   updatedBy?: string;
-  deletedAt?: Date;
-  deletedBy?: string;
   readonly createdAt?: Date;
   readonly updatedAt?: Date;
 }

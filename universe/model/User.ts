@@ -1,4 +1,4 @@
-export interface User {
+export default interface User {
   "@id"?: string;
   roleGroup?: any;
   readonly email?: string;

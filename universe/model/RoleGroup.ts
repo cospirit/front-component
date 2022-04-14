@@ -1,4 +1,4 @@
-export interface RoleGroup {
+export default interface RoleGroup {
   "@id"?: string;
   label?: string;
   code?: string;

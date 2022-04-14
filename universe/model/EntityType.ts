@@ -1,7 +1,7 @@
-export interface Service {
+export default interface EntityType {
   "@id"?: string;
-  code?: string;
   label?: string;
+  code?: string;
   createdBy?: string;
   updatedBy?: string;
   readonly createdAt?: Date;

@@ -1,7 +1,7 @@
-export interface Position {
+export default interface Areatype {
   "@id"?: string;
+  code?: string;
   label?: string;
-  level?: number;
   createdBy?: string;
   updatedBy?: string;
   readonly createdAt?: Date;

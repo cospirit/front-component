@@ -1,4 +1,4 @@
-export interface AreaType {
+export default interface Service {
   "@id"?: string;
   code?: string;
   label?: string;

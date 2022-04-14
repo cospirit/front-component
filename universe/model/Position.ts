@@ -1,7 +1,7 @@
-export interface AttributeGroup {
+export default interface Position {
   "@id"?: string;
   label?: string;
-  owner?: any;
+  level?: number;
   createdBy?: string;
   updatedBy?: string;
   readonly createdAt?: Date;

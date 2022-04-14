@@ -1,4 +1,4 @@
-export interface Address {
+export default interface Address {
   "@id"?: string;
   address1?: string;
   address2?: string;

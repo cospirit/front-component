@@ -11,6 +11,7 @@ export default interface Entity {
   areas: any | null;
   services: any | null;
   attributes: AttributeValue[];
+  overloadedAttributes: any;
   readonly code: string | null;
   readonly level: number | null;
   readonly left: number | null;

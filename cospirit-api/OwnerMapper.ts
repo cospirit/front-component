@@ -13,7 +13,19 @@ export default class OwnerMapper {
         };
     }
 
-    private static featuresFromAttributeValues(attributeValues: AttributeValue[]): PtfFeature[] {
+    private static featuresFromEntity(entity: Entity): PtfFeature[] {
+        if (entity.attributes === undefined) {
+            return Object.entries(entity.overloadedAttributes)
+                .filter(([name, value]) => name.startsWith("PTF_FEATURE") && value === true)
+                .map(([name, value]) => {
+                    return {
+                        code: name,
+                        name,
+                        enabled: true,
+                    };
+                });
+        }
+        const attributeValues = entity.attributes;
         console.log("attributes given to ownerMapper :", attributeValues);
         const features = attributeValues
             .filter((attributeValue) => attributeValue.attribute.code.startsWith("PTF_FEATURE"))
@@ -22,7 +34,11 @@ export default class OwnerMapper {
         return features.filter((feature) => feature.enabled);
     }
 
-    private static ptfOwnerFromAttributeValues(attributeValues: AttributeValue[]): string | null {
+    private static ptfOwnerFromEntity(entity: Entity): string | null {
+        if (entity.attributes === undefined) {
+            return entity.overloadedAttributes.PTF_OWNER_UUID;
+        }
+        const attributeValues = entity.attributes;
         const ptfOwner = attributeValues.find((attributeValue) => attributeValue.attribute.code === "PTF_OWNER_UUID");
         if (ptfOwner === undefined) {
             return null;
@@ -30,9 +46,18 @@ export default class OwnerMapper {
         return ptfOwner.value;
     }
 
+    private static featuresAsStringFromEntity(entity: Entity): string[] {
+        const prefix = "PTF_FEATURE_";
+        return this.featuresFromEntity(entity)
+            .map((f) => f.name)
+            .filter((f) => f.startsWith(prefix))
+            .map((f) => f.substring(prefix.length))
+            ;
+    }
+
     public static ownerFromEntity(entity: Entity): Owner {
         return {
-            features: this.featuresFromAttributeValues(entity.attributes),
+            features: this.featuresAsStringFromEntity(entity),
             owner: {
                 uuid: entity.uuid != null ? entity.uuid : "",
                 fullName: entity.name != null ? entity.name : "",
@@ -41,7 +66,7 @@ export default class OwnerMapper {
                     uuid: entity.parent != null ? entity.parent : ""
                 }
             },
-            uuid: this.ptfOwnerFromAttributeValues(entity.attributes),
+            uuid: this.ptfOwnerFromEntity(entity),
 
         };
     }

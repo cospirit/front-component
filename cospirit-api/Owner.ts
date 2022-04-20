@@ -1,5 +1,3 @@
-import {PtfFeature} from "./Ptf/PtfFeature";
-
 export interface Owner {
     uuid: string | null;
     owner?: {
@@ -8,5 +6,5 @@ export interface Owner {
         logoBase64: string | null;
         parent: { uuid: string } | null;
     };
-    features?: PtfFeature[];
+    features?: string[];
 }

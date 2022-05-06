@@ -45,10 +45,13 @@ export default {
                 Http.search(
                     TRANSLATION_ROUTE,
                     params,
-                    (data: Data) => { state.translations = data.data; },
+                    (data: Data) => {
+                        console.log("translations :", data);
+                        state.translations = data.data;
+                    },
                     (error: Data) => {
                         state.translations = null;
-                        EventBus.$emit("error-alert", { message: error.status.messages });
+                        EventBus.$emit("error-alert", {message: error.status.messages});
                     },
                 );
             };

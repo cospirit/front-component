@@ -2,7 +2,7 @@ import Attribute from "./Attribute";
 import Entity from "./Entity";
 
 export default interface AttributeValue {
-  "@id": string;
+  uuid: string;
   attribute: Attribute;
   entity: Entity;
   value: any;

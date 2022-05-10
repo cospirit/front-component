@@ -1,7 +1,7 @@
 {
   "name": "cospirit-front-component",
-  "version": "1.0.0",
-  "private": true,
+  "version": "4.3.1",
+  "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
     "lint": " tslint --fix --project ./tsconfig.json"
@@ -72,7 +72,9 @@
   },
   "files": [
     "components/*.vue",
-    "modules/*.ts",
+    "modules/**/*.ts",
+    "cospirit-api/**/*.ts",
+    "universe/**/*.ts",
     "streetview/*",
     "*.ts",
     "*.js",

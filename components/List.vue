@@ -51,11 +51,7 @@ export default class List extends Vue {
         this.loadUsingApi();
     }
 
-    public created(): void {
-        console.log('created');
-    }
     public mounted(): void {
-        console.log("standard list mounted 2");
         this.loadUsingApi();
         if (this.neededPagination) {
             window.onscroll = () => {
@@ -94,7 +90,6 @@ export default class List extends Vue {
     }
 
     protected loadUsingApi(): void {
-        console.log('loadUsingAPI');
         const params: object = {
             filters: this.filters,
             orders: this.orders,

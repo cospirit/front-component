@@ -8,10 +8,8 @@ const prefix = "PTF_FEATURE_";
 export default class OwnerMapper {
 
     private static featureFromAttributeValue(attributeValue: AttributeValue): PtfFeature {
-        console.log("featureFromAttributeValue", attributeValue);
         return {
-            // code: attributeValue.attribute.code.substring(prefix.length),
-            code: "PONEY", //FIXME
+            code: attributeValue.attribute.code.substring(prefix.length),
             // name: attributeValue.attribute.name,
             uuid: attributeValue.uuid,
             // enabled: attributeValue.value,
@@ -19,9 +17,7 @@ export default class OwnerMapper {
     }
 
     private static featuresFromEntity(entity: Entity): PtfFeature[] {
-        console.log("featuresFromEntity", entity);
         if (entity.attributes === undefined) {
-            // console.trace("wut");
             return Object.entries(entity.overloadedAttributes)
                 .filter(([name, value]) => name.startsWith(prefix) && value === true)
                 .map(([name, value]) => {
@@ -34,34 +30,11 @@ export default class OwnerMapper {
                 });
         }
         const attributeValues = entity.attributes;
-        console.log("attributes given to ownerMapper :", attributeValues);
-        const features = attributeValues
+        return attributeValues
             .filter((attributeValue) => attributeValue.attribute.code.startsWith(prefix))
             .filter((attributeValue) => attributeValue.value === true)
             .map((attributeValue) => this.featureFromAttributeValue(attributeValue));
-        console.log("after mapping :", features);
-        return features;
     }
-
-    // private static ptfOwnerFromEntity(entity: Entity): string | null {
-    //     if (entity.attributes === undefined) {
-    //         return entity.overloadedAttributes.PTF_OWNER_UUID;
-    //     }
-    //     const attributeValues = entity.attributes;
-    //     const ptfOwner = attributeValues.find((attributeValue) => attributeValue.attribute.code === "PTF_OWNER_UUID");
-    //     if (ptfOwner === undefined) {
-    //         return null;
-    //     }
-    //     return ptfOwner.value;
-    // }
-
-    // private static featuresAsStringFromEntity(entity: Entity): string[] {
-    //     return this.featuresFromEntity(entity)
-    //         .map((f) => f.name)
-    //         .filter((f) => f.startsWith(prefix))
-    //         .map((f) => f.substring(prefix.length))
-    //         ;
-    // }
 
     public static ownerFromEntity(entity: Entity): Owner {
         return {

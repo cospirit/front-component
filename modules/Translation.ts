@@ -46,7 +46,6 @@ export default {
                     TRANSLATION_ROUTE,
                     params,
                     (data: Data) => {
-                        console.log("translations :", data);
                         state.translations = data.data;
                     },
                     (error: Data) => {

@@ -73,8 +73,8 @@
   "files": [
     "components/*.vue",
     "modules/**/*.ts",
-    "cospirit-api/**/*.ts",
-    "universe/**/*.ts",
+    "../cockpit/src/model/cospirit-api/**/*.ts",
+    "../cockpit/src/model/universe/**/*.ts",
     "streetview/*",
     "*.ts",
     "*.js",

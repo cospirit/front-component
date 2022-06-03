@@ -1,8 +1,6 @@
-import $http from "axios";
 import _ from "lodash";
-import EventBus from "./EventBus";
 import Configuration from "./Configuration";
-import Loading from "./modules/Loading";
+import Api from "./Api";
 
 export interface Data {
     status: {
@@ -12,112 +10,37 @@ export interface Data {
     data: any;
 }
 
-export default class Http {
+export default class Http extends Api {
 
-    public static getHeaders(): object {
-        const accessToken: string = localStorage.getItem("access_token") || "";
-
+    public getHeaders(): object {
         return {
+            ...super.getHeaders(),
             "X-Requested-With": "XMLHttpRequest",
-            "Authorization" : accessToken.indexOf(":") > 0 ?
-                "Basic " + Buffer.from(accessToken).toString("base64") :
-                "Bearer " + accessToken,
         };
     }
 
+    public static getBaseObject(): Http {
+        return new Http(Configuration.get("apiUri"));
+    }
+
     public static search(link: string, params: object, successFunction: any, errorFunction?: any): void {
-        new Http().call("post", link, params, successFunction, errorFunction);
+        this.getBaseObject().call("post", link, params, successFunction, errorFunction);
     }
 
     public static create(link: string, params: object, successFunction: any, errorFunction?: any): void {
-        new Http().call("post", link, params, successFunction, errorFunction);
+        this.getBaseObject().call("post", link, params, successFunction, errorFunction);
     }
 
     public static save(link: string, params: object, successFunction: any, errorFunction?: any): void {
-        new Http().call("patch", link, params, successFunction, errorFunction);
+        this.getBaseObject().call("patch", link, params, successFunction, errorFunction);
     }
 
     public static delete(link: string, params: object, successFunction: any, errorFunction?: any): void {
-        new Http().call("delete", link, params, successFunction, errorFunction);
+        this.getBaseObject().call("delete", link, params, successFunction, errorFunction);
     }
 
     public static download(link: string, params: object, successFunction: any, errorFunction?: any): void {
-        new Http().call("get", link, [], successFunction, errorFunction, { responseType: "blob", params });
-    }
-
-    private call(
-        method: string,
-        link: string,
-        data: object,
-        successFunction: any,
-        errorFunction: any,
-        extraConfig: any = {}
-    ): void {
-        const currentTimestamp = Date.now();
-        Loading.mutations.increase(Loading.state);
-        $http
-            .request(
-                _.assign(
-                    {
-                        url: Configuration.get("apiUri") + link,
-                        headers: Http.getHeaders(),
-                        method,
-                        data,
-                    },
-                    extraConfig
-                )
-            )
-            .then((response: any) => {
-                Loading.mutations.decrease(Loading.state);
-                if (Configuration.get("lastValidTimestamp") <= currentTimestamp) {
-                    if (successFunction) {
-                        successFunction(response.data);
-                    } else {
-                        EventBus.$emit("success-alert", { message: "Operation successfully completed." });
-                    }
-                }
-            })
-            .catch((error: { response: { data: Data }|null}) => {
-                Loading.mutations.decrease(Loading.state);
-                if (Configuration.get("lastValidTimestamp") > currentTimestamp) {
-                    return;
-                }
-
-                if ("dev" === Configuration.get("debug")) {
-                    console.log(error);
-                }
-
-                if (typeof errorFunction === "function" && error.response && error.response.data) {
-                    return errorFunction(error.response.data);
-                }
-
-                if (typeof errorFunction !== "string") {
-                    errorFunction = "The operation was not able to be made, please warn the IT team.";
-                }
-
-                if (error.response) {
-                    if (_.get(error.response.data, "status.messages")) {
-                        _.forEach(
-                            error.response.data.status.messages,
-                            (messages: string[]|string, fieldName: string) => {
-                                errorFunction += fieldName + " : ";
-                                if (typeof messages !== "string") {
-                                    messages.forEach((message) => {
-                                        errorFunction += message + "<br>";
-                                    });
-                                } else {
-                                    errorFunction += messages + "<br>";
-                                }
-                            }
-                        );
-                    } else {
-                        errorFunction = "The operation was not able to be made, please warn the IT team.";
-                    }
-                }
-
-                EventBus.$emit("error-alert", { message: errorFunction });
-            })
-        ;
+        this.getBaseObject().call("get", link, [], successFunction, errorFunction, { responseType: "blob", params });
     }
 
     // getNeededFields from components list

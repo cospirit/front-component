@@ -1,68 +1,16 @@
-import $http from "axios";
-import Loading from "./modules/Loading";
+import Api from "./Api";
 import Configuration from "./Configuration";
-import EventBus from "./EventBus";
 
-
-export default class Universe {
-
-    public static getHeaders(): object {
+export default class Universe extends Api {
+    public getHeaders(): object {
         const accessToken: string = localStorage.getItem("access_token") || "";
         return {
-            // "X-Requested-With": "XMLHttpRequest",
-            "Authorization": accessToken.indexOf(":") > 0 ?
-                "Basic " + Buffer.from(accessToken).toString("base64") :
-                "Bearer " + accessToken,
+            ...super.getHeaders(),
             "X-AUTH-TOKEN": accessToken,
         };
     }
 
-    public static get(link: string, params: object, successFunction: any, errorFunction?: any): void {
-        new Universe().call("get", link, params, successFunction, errorFunction);
-    }
-
-    private call(
-        method: string,
-        link: string,
-        data: object,
-        successFunction: any,
-        errorFunction: any,
-        extraConfig: any = {}
-    ) {
-        const currentTimestamp = Date.now();
-        Loading.mutations.increase(Loading.state);
-        $http
-            .get(
-                Configuration.get("universeUri") + link,
-                {
-                    params: data,
-                    headers: Universe.getHeaders()
-                }
-            )
-            // .request(
-            //     _.assign(
-            //         {
-            //             url: Configuration.get("universeUri") + link,
-            //             headers: Universe.getHeaders(),
-            //             method,
-            //             data,
-            //         },
-            //         extraConfig
-            //     )
-            // )
-            .then((response) => {
-                Loading.mutations.decrease(Loading.state);
-                if (Configuration.get("lastValidTimestamp") <= currentTimestamp) {
-                    if (successFunction) {
-                        successFunction(response.data);
-                    } else {
-                        EventBus.$emit("success-alert", {message: "Operation successfully completed."});
-                    }
-                }
-            }).catch((error: { response: { data: any } | null }) => {
-            Loading.mutations.decrease(Loading.state);
-            console.log(error);
-            errorFunction(error);
-        });
+    public static getBaseObject(): Universe {
+        return new Universe(Configuration.get("universeUri"));
     }
 }

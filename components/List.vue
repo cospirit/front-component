@@ -28,8 +28,9 @@ export default class List extends Vue {
 
     @Prop({ default: () => [] }) public filters!: object[];
     @Prop({ default: () => [] }) public orders!: object[];
-    @Prop({ default: true}) public neededPagination!: boolean;
+    @Prop({ default: true }) public neededPagination!: boolean;
     @Prop({ default: 50 }) public limitPerPage!: number;
+    @Prop({ default: true }) public autoload!: boolean;
 
     @Watch("filters") public onFiltersChange(value: object[]): void {
         if (!this.filtersDebounced) {
@@ -52,7 +53,8 @@ export default class List extends Vue {
     }
 
     public mounted(): void {
-        this.loadUsingApi();
+        if (this.autoload)
+            this.loadUsingApi();
         if (this.neededPagination) {
             window.onscroll = () => {
                 const windowHeight = window.innerHeight;

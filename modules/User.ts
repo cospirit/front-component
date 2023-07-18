@@ -8,6 +8,7 @@ export interface User {
     displayName: string;
     email: string;
     roles: string[];
+    userHideFeatures: string[];
     department: Department|null;
     internalAccount: boolean;
 }

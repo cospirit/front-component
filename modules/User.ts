@@ -3,12 +3,16 @@ export interface Department {
     name: string;
 }
 
+export interface hideFeature {
+    code: string;
+}
+
 export interface User {
     uuid: string;
     displayName: string;
     email: string;
     roles: string[];
-    userHideFeatures: string[];
+    userHideFeatures: hideFeature[];
     department: Department|null;
     internalAccount: boolean;
 }

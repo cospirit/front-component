@@ -70,7 +70,7 @@ export default class Auth {
                 {
                     url: authUrl + this.CREATE_TOKEN_ROUTE,
                     params: {
-                        alternativeRedirectUrl: "https://cockpit-aldi.staging.cospirit.com/token"
+                        alternativeRedirectUrl: "https://international-cockpit.cospirit.com/token"
                     },
                     headers: {
                         ...headers,

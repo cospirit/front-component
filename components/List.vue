@@ -59,7 +59,7 @@ export default class List extends Vue {
                 const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop +
                     (document.documentElement && document.documentElement.scrollTop || 0);
 
-                if (document.body.offsetHeight <= windowHeight + scrollPosition) {
+                if (document.body.offsetHeight <= windowHeight + scrollPosition + 1) {
                     this.page++;
                     this.loadUsingApi();
                 }

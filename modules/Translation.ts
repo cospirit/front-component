@@ -1,7 +1,7 @@
 import Http, {Data} from "../Http";
 import EventBus from "../EventBus";
 
-const TRANSLATION_ROUTE = "/search/translation";
+const TRANSLATION_ROUTE = "/list/translation";
 
 interface Translation {
     source: string;
@@ -30,21 +30,13 @@ export default {
         loadTranslations: (state: any) => {
 
             return (context: string) => {
-                const params = {
-                    filters: {
-                        context,
-                    },
-                    fields: [
-                        "source",
-                        "target",
-                        "context",
-                        "language.code",
-                    ],
-                };
 
-                Http.search(
+                Http.get(
                     TRANSLATION_ROUTE,
-                    params,
+                    {
+                        context: context,
+                        code: "fr",
+                    },
                     (data: Data) => {
                         state.translations = data.data;
                     },

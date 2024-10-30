@@ -56,10 +56,12 @@ export default class List extends Vue {
         if (this.neededPagination) {
             window.onscroll = () => {
                 const windowHeight = window.innerHeight;
+                const documentHeight = document.documentElement.scrollHeight;
+                const threshold = documentHeight * 0.001;
                 const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop +
                     (document.documentElement && document.documentElement.scrollTop || 0);
 
-                if (document.body.offsetHeight <= windowHeight + scrollPosition + 1) {
+                if (documentHeight - (windowHeight + scrollPosition) <= threshold) {
                     this.page++;
                     this.loadUsingApi();
                 }

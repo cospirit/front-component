@@ -69,6 +69,9 @@ export default class Auth {
             $http.request(
                 {
                     url: authUrl + this.CREATE_TOKEN_ROUTE,
+                    params: {
+                        alternativeRedirectUrl: window.location.protocol+"//"+window.location.hostname+"/token"
+                    },
                     headers: {
                         ...headers,
                         "Content-Type": "multipart/form-data"

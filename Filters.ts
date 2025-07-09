@@ -53,6 +53,10 @@ export default {
             return formatDate(value, entryFormat, "DD/MM/YYYY HH:mm:ss");
         });
 
+        Vue.filter("datetimeWithoutSeconds", (value: string, entryFormat: string = "YYYY-MM-DD HH:mm:ss"): string => {
+            return formatDate(value, entryFormat, "DD/MM/YYYY HH:mm");
+        });
+
         Vue.filter("dashIfEmpty", (value: string) => {
             if (!value) {
                 return "-";

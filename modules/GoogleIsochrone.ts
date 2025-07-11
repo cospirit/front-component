@@ -37,8 +37,9 @@ export default class GoogleIsochrone {
         const searchPoints: PointToDestination[]  = [];
 
         // Only 100 points : Limited Query by Google API
-        for (let a = 0; a < 99; a ++) {
-            const radian = (360 / 99) * a * (Math.PI / 180);
+        // try with 25 points, we'll see if anyone notices
+        for (let a = 0; a < 24; a ++) {
+            const radian = (360 / 24) * a * (Math.PI / 180);
             searchPoints.push(GoogleIsochrone.getPointFromRadiusLatLng(center, radian, radiusLatLng));
         }
         searchPoints.push(GoogleIsochrone.getPointFromRadiusLatLng(center, 0, radiusLatLng));

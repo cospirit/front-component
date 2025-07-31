@@ -7,6 +7,10 @@ export interface hideFeature {
     code: string;
 }
 
+export interface Permission {
+    name: string;
+}
+
 export interface User {
     uuid: string;
     displayName: string;
@@ -15,6 +19,7 @@ export interface User {
     userHideFeatures: hideFeature[];
     department: Department|null;
     internalAccount: boolean;
+    permissions: Permission[];
 }
 
 export default {
@@ -48,6 +53,12 @@ export default {
         isCospiritUser: (state: any) => {
             return (state.currentUser && !state.currentUser.internalAccount);
         },
+        hasPermission: (state: any) => (permissionName: string) => {
+            if (!state.currentUser || !state.currentUser.permissions) {
+                return false;
+            }
+            return state.currentUser.permissions.some((permission: Permission) => permission.name === permissionName);
+        }
     },
     actions: {
         /*

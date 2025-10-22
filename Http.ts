@@ -23,6 +23,10 @@ export default class Http extends Api {
         return new Http(Configuration.get("apiUri"));
     }
 
+    public static callDirect(link: string, params: object, successFunction: any, errorFunction?: any): void {
+        this.getBaseObject().call("post", link, params, successFunction, errorFunction);
+    }
+
     public static search(link: string, params: object, successFunction: any, errorFunction?: any): void {
         this.getBaseObject().call("post", link, params, successFunction, errorFunction);
     }

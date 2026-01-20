@@ -31,15 +31,15 @@ export default {
             return state.currentUser;
         },
         isAdv: (state: any) => {
-            return !!(state.currentUser && state.currentUser.department && state.currentUser.department.name === "_DAF");
+            return !!(state.currentUser && state.currentUser.department && state.currentUser.department.name === "DAF");
 
         },
         isDsi: (state: any) => {
-            return !!(state.currentUser && state.currentUser.department && state.currentUser.department.name === "_DSI");
+            return !!(state.currentUser && state.currentUser.department && state.currentUser.department.name === "DSI");
 
         },
         isLocalMedia: (state: any) => {
-            return !!(state.currentUser && state.currentUser.department && state.currentUser.department.name === "_MEDIA_LOCAUX");
+            return !!(state.currentUser && state.currentUser.department && state.currentUser.department.name === "MEDIA LOCAUX");
 
         },
         getUserDepartment: (state: any) => {

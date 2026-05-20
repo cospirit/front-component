@@ -55,6 +55,9 @@ export default class List extends Vue {
         this.loadUsingApi();
         if (this.neededPagination) {
             window.onscroll = () => {
+                if (this.loading) {
+                    return;
+                }
                 const windowHeight = window.innerHeight;
                 const documentHeight = document.documentElement.scrollHeight;
                 const threshold = documentHeight * 0.001;

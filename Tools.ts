@@ -90,7 +90,7 @@ export default class Tools {
                 irisAttributes, totalIrisAttributes, "numberOfStudentsAge18andMore", "ageBetween15andMore",
             ),
             ageBetween18andMore: this.getPercentageForAttribute(
-                irisAttributes, totalIrisAttributes, "ageBetween18andMore", "ageBetween15andMore",
+                irisAttributes, totalIrisAttributes, "ageBetween18andMore", "population",
             ),
             numberOfActiveCsppHousehold: this.getPercentageForAttribute(
                 irisAttributes, totalIrisAttributes, "numberOfActiveCsppHousehold", "ageBetween15andMore",
@@ -98,6 +98,9 @@ export default class Tools {
             numberOfActiveCspmHousehold: this.getPercentageForAttribute(
                 irisAttributes, totalIrisAttributes, "numberOfActiveCspmHousehold", "ageBetween15andMore",
             ),
+            ageBetween25AndMore: 100 *
+                (this.getAgeOf25AndMoreAttributes(irisAttributes) / irisAttributes["population"])
+                / (this.getAgeOf25AndMoreTotalAttributes(irisAttributes) / totalIrisAttributes["population"]),
         };
     }
 
@@ -145,5 +148,17 @@ export default class Tools {
                 (totalIrisAttributes[attribute] +
                     (totalIrisAttributes[attribute] + totalIrisAttributes[divider])
                 ) * 100) * 100
+    }
+
+    public static getAgeOf25AndMoreAttributes(irisAttributes: Attributes): number {
+        return irisAttributes.ageBetween25and39 + irisAttributes.ageBetween40and54
+            + irisAttributes.ageBetween55and64 + irisAttributes.ageBetween65and79
+            + irisAttributes.ageBetween80andMore;
+    }
+
+    public static getAgeOf25AndMoreTotalAttributes(irisAttributes: Attributes): number {
+        return irisAttributes.ageBetween25and39 + irisAttributes.ageBetween40and54
+            + irisAttributes.ageBetween55and64 + irisAttributes.ageBetween65and79
+            + irisAttributes.ageBetween80andMore;
     }
 }

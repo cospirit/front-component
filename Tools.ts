@@ -59,34 +59,44 @@ export default class Tools {
             numberOfSecondaryHousing: this.getPercentageForAttribute(
                 irisAttributes, totalIrisAttributes, "numberOfSecondaryHousing", "numberOfHousing",
             ),
-            numberOfHouseBaseHousehold: this.getPercentageForAttribute(
-                irisAttributes, totalIrisAttributes, "numberOfHouseBaseHousehold", "numberOfHouseHold",
+            numberOfHouseBaseHousehold: this.getPercentageForAttributeWithAttributeDividerSum(
+                irisAttributes, totalIrisAttributes, "numberOfHouseBaseHousehold", "numberOfApartmentBaseHousehold"
             ),
-            numberOfApartmentBaseHousehold: this.getPercentageForAttribute(
-                irisAttributes, totalIrisAttributes, "numberOfApartmentBaseHousehold", "numberOfHouseHold",
+            numberOfApartmentBaseHousehold: this.getPercentageForAttributeWithAttributeDividerSum(
+                irisAttributes, totalIrisAttributes, "numberOfApartmentBaseHousehold", "numberOfHouseBaseHousehold"
             ),
-            numberOfOwner: (irisAttributes.numberOfOwner /
-                (irisAttributes.numberOfOwner + irisAttributes.numberOfTenant) * 100) /
-                (totalIrisAttributes.numberOfOwner /
-                    (totalIrisAttributes.numberOfOwner + totalIrisAttributes.numberOfTenant) * 100) * 100,
-            numberOfTenant: (irisAttributes.numberOfTenant /
-                (irisAttributes.numberOfOwner + irisAttributes.numberOfTenant) * 100) /
-                (totalIrisAttributes.numberOfTenant /
-                    (totalIrisAttributes.numberOfOwner + totalIrisAttributes.numberOfTenant) * 100) * 100,
+            numberOfOwner: this.getPercentageForAttributeWithAttributeDividerSum(
+                irisAttributes, totalIrisAttributes, "numberOfOwner", "numberOfTenant"
+            ),
+            numberOfTenant: this.getPercentageForAttributeWithAttributeDividerSum(
+                irisAttributes, totalIrisAttributes, "numberOfTenant", "numberOfOwner"
+            ),
             numberOfFamilyWithChild: this.getPercentageForAttribute(
                 irisAttributes, totalIrisAttributes, "numberOfFamilyWithChild", "numberOfFamily",
             ),
-            numberOfActiveCSPP: this.getPercentageForAttribute(
-                irisAttributes, totalIrisAttributes, "numberOfActiveCSPP", "ageBetween15andMore",
+            numberOfActiveCSPP: this.getPercentageForAttributeCSP(
+                irisAttributes, totalIrisAttributes, "numberOfActiveCSPP",
             ),
-            numberOfActiveCSPM: this.getPercentageForAttribute(
-                irisAttributes, totalIrisAttributes, "numberOfActiveCSPM", "ageBetween15andMore",
+            numberOfActiveCSPM: this.getPercentageForAttributeCSP(
+                irisAttributes, totalIrisAttributes, "numberOfActiveCSPM",
             ),
-            numberOfRetiredBetween64andMore: this.getPercentageForAttribute(
-                irisAttributes, totalIrisAttributes, "numberOfRetiredBetween64andMore", "ageBetween15andMore",
+            numberOfRetiredBetween64andMore: this.getPercentageForAttributeCSP(
+                irisAttributes, totalIrisAttributes, "numberOfRetiredBetween64andMore",
             ),
-            numberOfUnactiveBetween15and64: this.getPercentageForAttribute(
-                irisAttributes, totalIrisAttributes, "numberOfUnactiveBetween15and64", "ageBetween15andMore",
+            numberOfUnactiveBetween15and64: this.getPercentageForAttributeCSP(
+                irisAttributes, totalIrisAttributes, "numberOfUnactiveBetween15and64",
+            ),
+            numberOfStudentsAge18andMore: this.getPercentageForAttribute(
+                irisAttributes, totalIrisAttributes, "numberOfStudentsAge18andMore", "ageBetween15andMore",
+            ),
+            ageBetween18andMore: this.getPercentageForAttribute(
+                irisAttributes, totalIrisAttributes, "ageBetween18andMore", "ageBetween15andMore",
+            ),
+            numberOfActiveCsppHousehold: this.getPercentageForAttribute(
+                irisAttributes, totalIrisAttributes, "numberOfActiveCsppHousehold", "ageBetween15andMore",
+            ),
+            numberOfActiveCspmHousehold: this.getPercentageForAttribute(
+                irisAttributes, totalIrisAttributes, "numberOfActiveCspmHousehold", "ageBetween15andMore",
             ),
         };
     }
@@ -104,5 +114,36 @@ export default class Tools {
         return 100 *
             (irisAttributes[attribute] / irisAttributes[divider])
             / (totalIrisAttributes[attribute] / totalIrisAttributes[divider]);
+    }
+
+    public static getPercentageForAttributeCSP(
+        irisAttributes: Attributes,
+        totalIrisAttributes: Attributes,
+        attribute: string,
+    ) {
+        return (irisAttributes[attribute] /
+                (irisAttributes[attribute] +
+                    (irisAttributes.numberOfActiveCSPP + irisAttributes.numberOfActiveCSPM
+                        + irisAttributes.numberOfRetiredBetween64andMore + irisAttributes.numberOfUnactiveBetween15and64)) * 100) /
+            (totalIrisAttributes[attribute] /
+                (totalIrisAttributes[attribute] +
+                    (irisAttributes.numberOfActiveCSPP + irisAttributes.numberOfActiveCSPM
+                        + irisAttributes.numberOfRetiredBetween64andMore + irisAttributes.numberOfUnactiveBetween15and64)
+                ) * 100) * 100
+    }
+
+    public static getPercentageForAttributeWithAttributeDividerSum(
+        irisAttributes: Attributes,
+        totalIrisAttributes: Attributes,
+        attribute: string,
+        divider: string,
+    ) {
+        return (irisAttributes[attribute] /
+                (irisAttributes[attribute] +
+                    (irisAttributes[attribute] + irisAttributes[divider])) * 100) /
+            (totalIrisAttributes[attribute] /
+                (totalIrisAttributes[attribute] +
+                    (totalIrisAttributes[attribute] + totalIrisAttributes[divider])
+                ) * 100) * 100
     }
 }

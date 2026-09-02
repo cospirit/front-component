@@ -27,7 +27,7 @@ export default class Tools {
         return Math.ceil(mEndDate.diff(mBeginDate, "day") / 7);
     }
 
-    public static processAttributes(irisAttributes: Attributes, totalIrisAttributes: Attributes): Attributes {
+    public static processIrisAttributes(irisAttributes: Attributes, totalIrisAttributes: Attributes): Attributes {
         return {
             numberOfMen: this.getPercentageForAttribute(
                 irisAttributes, totalIrisAttributes, "numberOfMen", "population",
@@ -102,6 +102,23 @@ export default class Tools {
                 (this.getAgeOf25AndMoreAttributes(irisAttributes) / irisAttributes["population"])
                 / (this.getAgeOf25AndMoreTotalAttributes(irisAttributes) / totalIrisAttributes["population"]),
         };
+    }
+
+    public static processInseeAttributes(inseeAttributes: Attributes, inseeTotalAttributes: Attributes): Attributes {
+        return {
+            nbTaxableHousehold: this.getPercentageForAttribute(
+                inseeAttributes, inseeTotalAttributes, "nbTaxableHousehold", "nbTaxHousehold"
+            ),
+            nbCampingPitches: this.getPercentageForAttribute(
+                inseeAttributes, inseeTotalAttributes, "nbCampingPitches", "touristAccommodationCapacity"
+            ),
+            nbHotelBeds: this.getPercentageForAttribute(
+                inseeAttributes, inseeTotalAttributes, "nbHotelBeds", "touristAccommodationCapacity"
+            ),
+            nbOtherAccommodations: this.getPercentageForAttribute(
+                inseeAttributes, inseeTotalAttributes, "nbOtherAccommodations", "touristAccommodationCapacity"
+            ),
+        }
     }
 
     public static getPercentageForAttribute(

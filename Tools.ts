@@ -118,6 +118,9 @@ export default class Tools {
             nbOtherAccommodations: this.getPercentageForAttribute(
                 inseeAttributes, inseeTotalAttributes, "nbOtherAccommodations", "touristAccommodationCapacity"
             ),
+            numberOfSecondaryHousing: this.getPercentageForAttribute(
+                inseeAttributes, inseeTotalAttributes, "sumNumberOfSecondaryHousing", "numberOfHousing",
+            ),
         }
     }
 

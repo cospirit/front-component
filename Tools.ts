@@ -80,11 +80,11 @@ export default class Tools {
             numberOfActiveCSPM: this.getPercentageForAttributeCSP(
                 irisAttributes, totalIrisAttributes, "numberOfActiveCSPM",
             ),
-            numberOfRetiredBetween64andMore: this.getPercentageForAttributeCSP(
-                irisAttributes, totalIrisAttributes, "numberOfRetiredBetween64andMore",
+            numberOfRetiredBetween64andMore: this.getPercentageForAttribute(
+                irisAttributes, totalIrisAttributes, "numberOfRetiredBetween64andMore", "ageBetween15andMore",
             ),
-            numberOfUnactiveBetween15and64: this.getPercentageForAttributeCSP(
-                irisAttributes, totalIrisAttributes, "numberOfUnactiveBetween15and64",
+            numberOfUnactiveBetween15and64: this.getPercentageForAttribute(
+                irisAttributes, totalIrisAttributes, "numberOfUnactiveBetween15and64", "ageBetween15andMore",
             ),
             numberOfStudentsAge18andMore: this.getPercentageForAttribute(
                 irisAttributes, totalIrisAttributes, "numberOfStudentsAge18andMore", "ageBetween15andMore",
@@ -144,15 +144,14 @@ export default class Tools {
         totalIrisAttributes: Attributes,
         attribute: string,
     ) {
-        return (irisAttributes[attribute] /
-                (irisAttributes[attribute] +
-                    (irisAttributes.numberOfActiveCSPP + irisAttributes.numberOfActiveCSPM
-                        + irisAttributes.numberOfRetiredBetween64andMore + irisAttributes.numberOfUnactiveBetween15and64)) * 100) /
-            (totalIrisAttributes[attribute] /
-                (totalIrisAttributes[attribute] +
-                    (irisAttributes.numberOfActiveCSPP + irisAttributes.numberOfActiveCSPM
-                        + irisAttributes.numberOfRetiredBetween64andMore + irisAttributes.numberOfUnactiveBetween15and64)
-                ) * 100) * 100
+        const cspSum = irisAttributes.numberOfActiveCSPP + irisAttributes.numberOfActiveCSPM
+            + irisAttributes.numberOfRetiredBetween64andMore + irisAttributes.numberOfUnactiveBetween15and64;
+        const totalCspSum = totalIrisAttributes.numberOfActiveCSPP + totalIrisAttributes.numberOfActiveCSPM
+            + totalIrisAttributes.numberOfRetiredBetween64andMore + totalIrisAttributes.numberOfUnactiveBetween15and64;
+
+        const irisPercentage = (irisAttributes[attribute] / (irisAttributes[attribute] + cspSum)) * 100;
+        const totalPercentage = (totalIrisAttributes[attribute] / (totalIrisAttributes[attribute] + totalCspSum)) * 100;
+        return (irisPercentage / totalPercentage) * 100;
     }
 
     public static getPercentageForAttributeWithAttributeDividerSum(
@@ -161,13 +160,9 @@ export default class Tools {
         attribute: string,
         divider: string,
     ) {
-        return (irisAttributes[attribute] /
-                (irisAttributes[attribute] +
-                    (irisAttributes[attribute] + irisAttributes[divider])) * 100) /
-            (totalIrisAttributes[attribute] /
-                (totalIrisAttributes[attribute] +
-                    (totalIrisAttributes[attribute] + totalIrisAttributes[divider])
-                ) * 100) * 100
+        const irisPercentage = (irisAttributes[attribute] / (irisAttributes[attribute] + irisAttributes[divider])) * 100;
+        const totalPercentage = (totalIrisAttributes[attribute] / (totalIrisAttributes[attribute] + totalIrisAttributes[divider])) * 100;
+        return (irisPercentage / totalPercentage) * 100;
     }
 
     public static getAgeOf25AndMoreAttributes(irisAttributes: Attributes): number {

@@ -99,7 +99,7 @@ export default class Tools {
                 irisAttributes, totalIrisAttributes, "numberOfActiveCspmHousehold", "ageBetween15andMore",
             ),
             ageBetween25AndMore: this.getPercentageForAgeOf25AndMore(
-                irisAttributes, totalIrisAttributes,
+                irisAttributes, totalIrisAttributes, "population",
             ),
         };
     }
@@ -149,8 +149,9 @@ export default class Tools {
         const totalCspSum = totalIrisAttributes.numberOfActiveCSPP + totalIrisAttributes.numberOfActiveCSPM
             + totalIrisAttributes.numberOfRetiredBetween64andMore + totalIrisAttributes.numberOfUnactiveBetween15and64;
 
-        const irisPercentage = (irisAttributes[attribute] / (irisAttributes[attribute] + cspSum)) * 100;
-        const totalPercentage = (totalIrisAttributes[attribute] / (totalIrisAttributes[attribute] + totalCspSum)) * 100;
+        const irisPercentage = (irisAttributes[attribute] / cspSum) * 100;
+        const totalPercentage = (totalIrisAttributes[attribute] / totalCspSum) * 100;
+
         return (irisPercentage / totalPercentage) * 100;
     }
 
@@ -168,25 +169,20 @@ export default class Tools {
     public static getPercentageForAgeOf25AndMore(
         irisAttributes: Attributes,
         totalIrisAttributes: Attributes,
+        divider: string,
     ): number {
         const irisAgeOf25AndMore = this.getAgeOf25AndMoreAttributes(irisAttributes);
         const totalAgeOf25AndMore = this.getAgeOf25AndMoreAttributes(totalIrisAttributes);
 
-        const irisPercentage = (irisAgeOf25AndMore
-            / (irisAgeOf25AndMore + this.getAgeUnder25Attributes(irisAttributes))) * 100;
-        const totalPercentage = (totalAgeOf25AndMore
-            / (totalAgeOf25AndMore + this.getAgeUnder25Attributes(totalIrisAttributes))) * 100;
+        const irisPercentage = (irisAgeOf25AndMore / irisAttributes[divider]) * 100;
+        const totalPercentage = (totalAgeOf25AndMore / totalIrisAttributes[divider]) * 100;
 
         return (irisPercentage / totalPercentage) * 100;
     }
 
-    public static getAgeUnder25Attributes(irisAttributes: Attributes): number {
-        return Number(irisAttributes.ageBetween0and17) + Number(irisAttributes.ageBetween18and24);
-    }
-
     public static getAgeOf25AndMoreAttributes(irisAttributes: Attributes): number {
-        return Number(irisAttributes.ageBetween25and39) + Number(irisAttributes.ageBetween40and54)
-            + Number(irisAttributes.ageBetween55and64) + Number(irisAttributes.ageBetween65and79)
-            + Number(irisAttributes.ageBetween80andMore);
+        return irisAttributes.ageBetween25and39 + irisAttributes.ageBetween40and54
+            + irisAttributes.ageBetween55and64 + irisAttributes.ageBetween65and79
+            + irisAttributes.ageBetween80andMore;
     }
 }
